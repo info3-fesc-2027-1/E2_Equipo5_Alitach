@@ -1,0 +1,31 @@
+{
+  "name": "e2_equipo5_alitach",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next dev",
+    "build": "next buildscripts.start=next start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/info3-fesc-2027-1/E2_Equipo5_Alitach.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/info3-fesc-2027-1/E2_Equipo5_Alitach/issues"
+  },
+  "homepage": "https://github.com/info3-fesc-2027-1/E2_Equipo5_Alitach#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "next": "^16.4.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  }
+}
