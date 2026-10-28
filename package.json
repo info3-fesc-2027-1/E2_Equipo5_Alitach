@@ -9,7 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "next dev",
-    "build": "next buildscripts.start=next start"
+    "build": "next build",
+    "start": "next start"
   },
   "repository": {
     "type": "git",
