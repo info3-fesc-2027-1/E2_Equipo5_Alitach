@@ -4,6 +4,7 @@
 
 import { useState } from "react";
 import { validarProducto } from "../../lib/logica";
+import { guardarProducto } from "../../lib/datos";
 
 export default function Catalogo() {
   const [producto, setProducto] = useState({
@@ -20,16 +21,23 @@ export default function Catalogo() {
     setProducto({ ...producto, [e.target.name]: e.target.value });
   }
 
-  // Revisa el producto con validarProducto antes de registrarlo
-  function registrar(e) {
+    // Revisa el producto y si es válido lo guarda en Supabase
+  async function registrar(e) {
     e.preventDefault();
     const resultado = validarProducto(producto);
     setErrores(resultado.errores);
+    setMensaje("");
 
-    if (resultado.valido) {
-      setMensaje("Producto válido (todavía no se guarda en Supabase).");
-    } else {
-      setMensaje("");
+    if (!resultado.valido) {
+      return;
+    }
+
+    try {
+      await guardarProducto({ ...producto, precio: Number(producto.precio) });
+      setMensaje("Producto guardado.");
+      setProducto({ tipo_prenda: "", modelo: "", colores: "", precio: "" });
+    } catch (error) {
+      setMensaje("Error al guardar: " + error.message);
     }
   }
 
