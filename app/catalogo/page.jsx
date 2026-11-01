@@ -2,9 +2,9 @@
 
 // Pantalla del catálogo (RF2): el personal registra y consulta prendas para cotizar
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { validarProducto } from "../../lib/logica";
-import { guardarProducto } from "../../lib/datos";
+import { guardarProducto, obtenerProductos } from "../../lib/datos";
 
 export default function Catalogo() {
   const [producto, setProducto] = useState({
@@ -15,13 +15,29 @@ export default function Catalogo() {
   });
   const [errores, setErrores] = useState([]);
   const [mensaje, setMensaje] = useState("");
+  const [productos, setProductos] = useState([]);
+
+  // Trae de Supabase la lista de productos
+  async function cargarProductos() {
+    try {
+      const lista = await obtenerProductos();
+      setProductos(lista);
+    } catch (error) {
+      setMensaje("Error al cargar el catálogo: " + error.message);
+    }
+  }
+
+  // Al abrir la pantalla, carga el catálogo una vez
+  useEffect(() => {
+    cargarProductos();
+  }, []);
 
   // Guarda lo que se escribe en cada campo
   function cambiar(e) {
     setProducto({ ...producto, [e.target.name]: e.target.value });
   }
 
-    // Revisa el producto y si es válido lo guarda en Supabase
+  // Revisa el producto y, si es válido, lo guarda en Supabase
   async function registrar(e) {
     e.preventDefault();
     const resultado = validarProducto(producto);
@@ -36,6 +52,7 @@ export default function Catalogo() {
       await guardarProducto({ ...producto, precio: Number(producto.precio) });
       setMensaje("Producto guardado.");
       setProducto({ tipo_prenda: "", modelo: "", colores: "", precio: "" });
+      cargarProductos();
     } catch (error) {
       setMensaje("Error al guardar: " + error.message);
     }
@@ -59,7 +76,7 @@ export default function Catalogo() {
           <label>
             Modelo<br />
             <input name="modelo" value={producto.modelo} onChange={cambiar}
-              placeholder="Ej. " />
+              placeholder="Ej. Reflejante" />
           </label>
         </p>
         <p>
@@ -87,6 +104,19 @@ export default function Catalogo() {
         </ul>
       )}
       {mensaje && <p>{mensaje}</p>}
+
+      <h2>Productos registrados</h2>
+      {productos.length === 0 ? (
+        <p>Todavía no hay productos.</p>
+      ) : (
+        <ul>
+          {productos.map((p) => (
+            <li key={p.id}>
+              {p.tipo_prenda} · {p.modelo} · {p.colores} · ${p.precio}
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   );
 }
