@@ -39,12 +39,12 @@ El sistema se construye en vueltas. En cada una se atacan primero los riesgos m�
 
 ## Equipo
 
-| Integrante | Responsabilidades |
-|---|---|
-| Becerra Reyes Aura Mercedes | Administración e integración del repositorio, clientes, cambios de estado y listado de pedidos |
-| Holguín León Achtli Iyari | Análisis de requisitos, consulta de clientes, cambio de fecha de compromiso y detalle del pedido |
-| Molina Sarmientos Francisca | Análisis de riesgos, pruebas de aceptación, catálogo, cancelación y preparación de la demostración |
-| Tapia Ortega Shirel Itzamatúl | Estructura de datos, creación de pedidos, validación de fechas y orden de pedidos atrasados. |
+| Integrante | Rol | Responsabilidades |
+|---|---|---|
+| Becerra Reyes Aura Mercedes | Responsable del repositorio e integración | Administración del repositorio y Vercel, registro y consulta de clientes, cambio de estado con cancelación y detalle del pedido |
+| Holguín León Achtli Iyari | Enlace con la clienta | Revisiones con la dueña, prototipo del listado, validación del pedido y cálculo del total, modificación de fecha compromiso, pedidos atrasados y listado de pedidos |
+| Molina Sarmientos Francisca | Analista de investigación y riesgos | Tabla de riesgos, catálogo de productos, cancelación y detalle del pedido, pruebas de aceptación y guion de la demostración |
+| Tapia Ortega Shirel Itzamatúl | Desarrolladora líder | Estructura de datos en Supabase, diseño visual, creación de pedidos, orden de pedidos atrasados, carga del catálogo completo y revisión de código |
 
 ---
 
