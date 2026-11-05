@@ -31,13 +31,13 @@ export default function Pruebas() {
     ["Total sin prendas (0)", calcularTotal([])],
 
     ["Vence hoy (false)",
-     esAtrasado({ estado: "pendiente", fecha_compromiso: hoyTexto() })],
+     esAtrasado({ estado: "Pendiente", fecha_compromiso: hoyTexto() })],
     ["Ya venció (true)",
-     esAtrasado({ estado: "pendiente", fecha_compromiso: "2020-01-01" })],
+     esAtrasado({ estado: "Pendiente", fecha_compromiso: "2020-01-01" })],
     ["Entregado con fecha pasada (false)",
-     esAtrasado({ estado: "entregado", fecha_compromiso: "2020-01-01" })],
+     esAtrasado({ estado: "Entregado", fecha_compromiso: "2020-01-01" })],
     ["Fecha futura (false)",
-     esAtrasado({ estado: "pendiente", fecha_compromiso: "2030-01-01" })],
+     esAtrasado({ estado: "Pendiente", fecha_compromiso: "2030-01-01" })],
 
   ];
 
