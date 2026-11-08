@@ -1,156 +1,157 @@
 "use client";
-export const dynamic = "force-dynamic";
-import { useState } from "react";
-import { validarPedido, calcularTotal } from "../../lib/logica";
-import { guardarPedido } from "../../lib/datos";
 
-export default function NuevoPedidoPage() {
+// Pantalla de nuevo pedido (RF3): elegir cliente, agregar prendas y fecha compromiso
+
+import { useState, useEffect } from "react";
+import { validarPedido, calcularTotal } from "../../lib/logica";
+import { buscarClientes, obtenerProductos, obtenerOpciones, guardarPedido } from "../../lib/datos";
+
+const PRENDA_VACIA = { producto_id: "", opcion_id: "", piezas: 1, talla: "", color: "", precio_unitario: 0 };
+
+export default function NuevoPedido() {
+  const [clientes, setClientes] = useState([]);
+  const [productos, setProductos] = useState([]);
+  const [opciones, setOpciones] = useState([]);
+
   const [clienteId, setClienteId] = useState("");
   const [fechaCompromiso, setFechaCompromiso] = useState("");
-  const [prendas, setPrendas] = useState([
-    { tipo_prenda: "", piezas: 1, precio_unitario: 0 }
-  ]);
+  const [prendas, setPrendas] = useState([{ ...PRENDA_VACIA }]);
   const [errores, setErrores] = useState([]);
-  const [exito, setExito] = useState(false);
+  const [mensaje, setMensaje] = useState("");
+  const [guardando, setGuardando] = useState(false);
 
-  const agregarPrenda = () => {
-    setPrendas([...prendas, { tipo_prenda: "", piezas: 1, precio_unitario: 0 }]);
-  };
+  // Al abrir la pantalla, trae clientes, productos y opciones de Supabase
+  useEffect(() => {
+    async function cargar() {
+      try {
+        setClientes(await buscarClientes(""));
+        setProductos(await obtenerProductos());
+        setOpciones(await obtenerOpciones());
+      } catch (error) {
+        setErrores(["Error al cargar datos: " + error.message]);
+      }
+    }
+    cargar();
+  }, []);
 
-  const actualizarPrenda = (index, campo, valor) => {
-    const nuevasPrendas = [...prendas];
-    nuevasPrendas[index][campo] = valor;
-    setPrendas(nuevasPrendas);
-  };
+  function agregarPrenda() {
+    setPrendas([...prendas, { ...PRENDA_VACIA }]);
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setExito(false);
+  function cambiarPrenda(index, campo, valor) {
+    const nuevas = [...prendas];
+    nuevas[index] = { ...nuevas[index], [campo]: valor };
+    setPrendas(nuevas);
+  }
 
-    const pedidoAValidar = {
-      cliente_id: clienteId,
-      fecha_compromiso: fechaCompromiso,
-      prendas: prendas
+  // Al elegir un producto, se copia su precio del catálogo
+  function elegirProducto(index, id) {
+    const producto = productos.find((p) => String(p.id) === id);
+    const nuevas = [...prendas];
+    nuevas[index] = {
+      ...nuevas[index],
+      producto_id: id,
+      precio_unitario: producto ? Number(producto.precio) : 0,
     };
+    setPrendas(nuevas);
+  }
 
-    const resultado = validarPedido(pedidoAValidar);
+  async function registrar(e) {
+    e.preventDefault();
+    setMensaje("");
+
+    const pedido = { cliente_id: clienteId, fecha_compromiso: fechaCompromiso, prendas: prendas };
+    const resultado = validarPedido(pedido);
+    setErrores(resultado.errores);
 
     if (!resultado.valido) {
-      setErrores(resultado.errores);
       return;
     }
 
-    setErrores([]);
-
+    setGuardando(true);
     try {
-      // Usamos la función correcta importada de datos.js
       await guardarPedido(
         { cliente_id: clienteId, fecha_compromiso: fechaCompromiso, estado: "Pendiente" },
-        prendas
+        prendas.map((p) => ({ ...p, opcion_id: p.opcion_id || null }))
       );
-      setExito(true);
-      console.log("Pedido guardado exitosamente en Supabase:", pedidoAValidar);
+      setMensaje("Pedido guardado en Pendiente.");
+      setClienteId("");
+      setFechaCompromiso("");
+      setPrendas([{ ...PRENDA_VACIA }]);
     } catch (error) {
-      setErrores([error.message]);
+      setErrores(["Error al guardar: " + error.message]);
+    } finally {
+      setGuardando(false);
     }
-  };
-
-  const totalCalculado = calcularTotal(prendas);
+  }
 
   return (
-    <main className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Registrar Nuevo Pedido (RF3)</h1>
+    <main>
+      <h1>Nuevo pedido</h1>
 
-      {errores.length > 0 && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-          <p className="font-bold">Por favor corrige los siguientes errores:</p>
-          <ul className="list-disc pl-5">
-            {errores.map((err, index) => (
-              <li key={index}>{err}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <form onSubmit={registrar}>
+        <p>
+          <label>
+            Cliente<br />
+            <select value={clienteId} onChange={(e) => setClienteId(e.target.value)}>
+              <option value="">Elige un cliente</option>
+              {clientes.map((c) => (
+                <option key={c.id} value={c.id}>{c.nombre}</option>
+              ))}
+            </select>
+          </label>
+        </p>
 
-      {exito && (
-        <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-          ¡Registro exitoso! El pedido se ha guardado correctamente en la base de datos.
-        </div>
-      )}
+        <p>
+          <label>
+            Fecha compromiso<br />
+            <input type="date" value={fechaCompromiso}
+              onChange={(e) => setFechaCompromiso(e.target.value)} />
+          </label>
+        </p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">ID del Cliente:</label>
-          <input
-            type="text"
-            value={clienteId}
-            onChange={(e) => setClienteId(e.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            placeholder="Ej. cli-001"
-          />
-        </div>
+        <h2>Prendas</h2>
+        {prendas.map((prenda, index) => (
+          <fieldset key={index}>
+            <legend>Prenda {index + 1}</legend>
+            <select value={prenda.producto_id} onChange={(e) => elegirProducto(index, e.target.value)}>
+              <option value="">Producto</option>
+              {productos.map((p) => (
+                <option key={p.id} value={p.id}>{p.tipo_prenda} · {p.modelo}</option>
+              ))}
+            </select>{" "}
+            <select value={prenda.opcion_id} onChange={(e) => cambiarPrenda(index, "opcion_id", e.target.value)}>
+              <option value="">Sin personalización</option>
+              {opciones.map((o) => (
+                <option key={o.id} value={o.id}>{o.tipo} · {o.descripcion}</option>
+              ))}
+            </select>{" "}
+            <input type="number" min="1" value={prenda.piezas} placeholder="Piezas"
+              onChange={(e) => cambiarPrenda(index, "piezas", Number(e.target.value))} />{" "}
+            <input value={prenda.talla} placeholder="Talla"
+              onChange={(e) => cambiarPrenda(index, "talla", e.target.value)} />{" "}
+            <input value={prenda.color} placeholder="Color"
+              onChange={(e) => cambiarPrenda(index, "color", e.target.value)} />{" "}
+            <span>${prenda.precio_unitario} c/u</span>
+          </fieldset>
+        ))}
+        <button type="button" onClick={agregarPrenda}>+ Agregar otra prenda</button>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Fecha Compromiso:</label>
-          <input
-            type="date"
-            value={fechaCompromiso}
-            onChange={(e) => setFechaCompromiso(e.target.value)}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-          />
-        </div>
+        <p><b>Total: ${calcularTotal(prendas).toFixed(2)}</b></p>
 
-        <div className="border-t pt-4">
-          <h2 className="text-lg font-semibold mb-2">Prendas y Personalización</h2>
-          {prendas.map((prenda, index) => (
-            <div key={index} className="flex gap-2 mb-2 items-center">
-              <input
-                type="text"
-                placeholder="Tipo de prenda"
-                value={prenda.tipo_prenda}
-                onChange={(e) => actualizarPrenda(index, "tipo_prenda", e.target.value)}
-                className="w-1/3 p-2 border border-gray-300 rounded-md"
-              />
-              <input
-                type="number"
-                placeholder="Piezas"
-                min="1"
-                value={prenda.piezas}
-                onChange={(e) => actualizarPrenda(index, "piezas", Number(e.target.value))}
-                className="w-1/4 p-2 border border-gray-300 rounded-md"
-              />
-              <input
-                type="number"
-                placeholder="Precio unitario ($)"
-                min="0"
-                step="0.01"
-                value={prenda.precio_unitario}
-                onChange={(e) => actualizarPrenda(index, "precio_unitario", Number(e.target.value))}
-                className="w-1/3 p-2 border border-gray-300 rounded-md"
-              />
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={agregarPrenda}
-            className="mt-2 px-4 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm"
-          >
-            + Añadir otra prenda
-          </button>
-        </div>
-
-        <div className="bg-gray-50 p-4 rounded-md mt-4 flex justify-between items-center">
-          <span className="font-semibold text-gray-700">Total Calculado:</span>
-          <span className="text-xl font-bold text-green-600">${totalCalculado.toFixed(2)}</span>
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 font-semibold"
-        >
-          Guardar y Registrar Pedido
+        <button type="submit" disabled={guardando}>
+          {guardando ? "Guardando…" : "Guardar pedido"}
         </button>
       </form>
+
+      {errores.length > 0 && (
+        <ul>
+          {errores.map((error) => (
+            <li key={error}>{error}</li>
+          ))}
+        </ul>
+      )}
+      {mensaje && <p>{mensaje}</p>}
     </main>
   );
 }
