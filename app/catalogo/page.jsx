@@ -3,8 +3,8 @@
 // Pantalla del catálogo (RF2): el personal registra y consulta prendas para cotizar
 
 import { useState, useEffect } from "react";
-import { validarProducto } from "../../lib/logica";
-import { guardarProducto, obtenerProductos } from "../../lib/datos";
+import { validarProducto, validarOpcion } from "../../lib/logica";
+import { guardarProducto, obtenerProductos, guardarOpcion, obtenerOpciones } from "../../lib/datos";
 
 export default function Catalogo() {
   const [producto, setProducto] = useState({
@@ -16,6 +16,9 @@ export default function Catalogo() {
   const [errores, setErrores] = useState([]);
   const [mensaje, setMensaje] = useState("");
   const [productos, setProductos] = useState([]);
+  const [opcion, setOpcion] = useState({ tipo: "Bordado", descripcion: "", precio: "" });
+  const [opciones, setOpciones] = useState([]);
+  const [guardando, setGuardando] = useState(false);
 
   // Trae de Supabase la lista de productos
   async function cargarProductos() {
@@ -27,9 +30,20 @@ export default function Catalogo() {
     }
   }
 
-  // Al abrir la pantalla, carga el catálogo una vez
+  // Trae de Supabase las opciones de bordado y serigrafía
+  async function cargarOpciones() {
+    try {
+      const lista = await obtenerOpciones();
+      setOpciones(lista);
+    } catch (error) {
+      setMensaje("Error al cargar las opciones: " + error.message);
+    }
+  }
+
+  // Al abrir la pantalla, carga el catálogo y las opciones una vez
   useEffect(() => {
     cargarProductos();
+    cargarOpciones();
   }, []);
 
   // Guarda lo que se escribe en cada campo
@@ -48,6 +62,7 @@ export default function Catalogo() {
       return;
     }
 
+    setGuardando(true);
     try {
       await guardarProducto({ ...producto, precio: Number(producto.precio) });
       setMensaje("Producto guardado.");
@@ -55,6 +70,30 @@ export default function Catalogo() {
       cargarProductos();
     } catch (error) {
       setMensaje("Error al guardar: " + error.message);
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  // Guarda una opción de personalización (bordado o serigrafía)
+  async function registrarOpcion(e) {
+    e.preventDefault();
+    setMensaje("");
+    const resultado = validarOpcion(opcion);
+    setErrores(resultado.errores);
+    if (!resultado.valido) {
+      return;
+    }
+    setGuardando(true);
+    try {
+      await guardarOpcion({ ...opcion, precio: Number(opcion.precio) });
+      setMensaje("Opción guardada.");
+      setOpcion({ tipo: "Bordado", descripcion: "", precio: "" });
+      cargarOpciones();
+    } catch (error) {
+      setMensaje("Error al guardar la opción: " + error.message);
+    } finally {
+      setGuardando(false);
     }
   }
 
@@ -93,7 +132,9 @@ export default function Catalogo() {
               placeholder="Ej. 250" />
           </label>
         </p>
-        <button type="submit">Registrar</button>
+        <button type="submit" disabled={guardando}>
+          {guardando ? "Guardando…" : "Registrar"}
+        </button>
       </form>
 
       {errores.length > 0 && (
@@ -117,6 +158,29 @@ export default function Catalogo() {
           ))}
         </ul>
       )}
+
+      <h2>Opciones de personalización</h2>
+      <form onSubmit={registrarOpcion}>
+        <select value={opcion.tipo} onChange={(e) => setOpcion({ ...opcion, tipo: e.target.value })}>
+          <option value="Bordado">Bordado</option>
+          <option value="Serigrafía">Serigrafía</option>
+        </select>{" "}
+        <input value={opcion.descripcion} placeholder="Ej. Logo en el pecho"
+          onChange={(e) => setOpcion({ ...opcion, descripcion: e.target.value })} />{" "}
+        <input type="number" step="0.01" value={opcion.precio} placeholder="Precio"
+          onChange={(e) => setOpcion({ ...opcion, precio: e.target.value })} />{" "}
+        <button type="submit" disabled={guardando}>
+          {guardando ? "Guardando…" : "Agregar opción"}
+        </button>
+      </form>
+
+      <ul>
+        {opciones.map((o) => (
+          <li key={o.id}>
+            {o.tipo} · {o.descripcion} · ${o.precio}
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }
