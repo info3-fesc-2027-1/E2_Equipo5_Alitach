@@ -38,6 +38,10 @@ export default function Pruebas() {
      esAtrasado({ estado: "Entregado", fecha_compromiso: "2020-01-01" })],
     ["Fecha futura (false)",
      esAtrasado({ estado: "Pendiente", fecha_compromiso: "2030-01-01" })],
+    ["Cancelado con fecha pasada (false)",
+     esAtrasado({ estado: "Cancelado", fecha_compromiso: "2020-01-01" })],
+    ["En proceso con fecha pasada (true)",
+     esAtrasado({ estado: "En proceso", fecha_compromiso: "2020-01-01" })],
 
   ];
 
