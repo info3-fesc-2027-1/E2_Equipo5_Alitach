@@ -71,7 +71,7 @@ export default function NuevoPedido() {
     setGuardando(true);
     try {
       await guardarPedido(
-        { cliente_id: clienteId, fecha_compromiso: fechaCompromiso, estado: "Pendiente" },
+        { cliente_id: clienteId, fecha_compromiso: fechaCompromiso, fecha_compromiso_original: fechaCompromiso, estado: "Pendiente" },
         prendas.map((p) => ({ ...p, opcion_id: p.opcion_id || null }))
       );
       setMensaje("Pedido guardado en Pendiente.");
