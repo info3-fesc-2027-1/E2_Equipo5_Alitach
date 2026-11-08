@@ -1,7 +1,8 @@
 "use client";
+export const dynamic = "force-dynamic";
 import { useState } from "react";
-import { validarPedido, calcularTotal } from "@/lib/logica";
-import { guardarPedidoEnSupabase } from "@/lib/datos";
+import { validarPedido, calcularTotal } from "../../lib/logica";
+import { guardarPedido } from "../../lib/datos";
 
 export default function NuevoPedidoPage() {
   const [clienteId, setClienteId] = useState("");
@@ -42,8 +43,11 @@ export default function NuevoPedidoPage() {
     setErrores([]);
 
     try {
-      
-      await guardarPedidoEnSupabase(pedidoAValidar);
+      // Usamos la función correcta importada de datos.js
+      await guardarPedido(
+        { cliente_id: clienteId, fecha_compromiso: fechaCompromiso, estado: "Pendiente" },
+        prendas
+      );
       setExito(true);
       console.log("Pedido guardado exitosamente en Supabase:", pedidoAValidar);
     } catch (error) {
