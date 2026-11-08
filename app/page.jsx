@@ -4,8 +4,11 @@ export default function Inicio() {
   return (
     <main>
       <h1>Sistema de pedidos Alitach</h1>
-      <p>Equipo 5 · Modelo Espiral · V2</p>
+      <p>Equipo 5 · Modelo Espiral</p>
       <ul>
+        <li><a href="/clientes">Clientes</a></li>
+        <li><a href="/catalogo">Catálogo</a></li>
+        <li><a href="/nuevo-pedido">Nuevo pedido</a></li>
         <li><a href="/pruebas">Pruebas de lógica</a></li>
         <li><a href="/prueba-datos">Prueba de datos (Supabase)</a></li>
       </ul>
