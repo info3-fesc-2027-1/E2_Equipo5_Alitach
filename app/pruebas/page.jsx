@@ -1,6 +1,7 @@
 import {
   validarCliente,
   validarProducto,
+  validarOpcion,
   validarPedido,
   calcularTotal,
 } from "../../lib/logica";
@@ -18,6 +19,8 @@ export default function Pruebas() {
     ["Producto completo", validarProducto({ tipo_prenda: "Chaleco", precio: 250 })],
     ["Producto sin precio", validarProducto({ tipo_prenda: "Chaleco" })],
     ["Producto vacío y precio negativo", validarProducto({ tipo_prenda: "", precio: -5 })],
+    ["Opción completa", validarOpcion({ tipo: "Bordado", descripcion: "Logo en el pecho", precio: 25 })],
+    ["Opción sin descripción", validarOpcion({ tipo: "Serigrafía", descripcion: "", precio: 20 })],
 
 
     // Achtli
