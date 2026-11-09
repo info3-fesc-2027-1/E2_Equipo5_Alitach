@@ -4,6 +4,8 @@ import {
   validarOpcion,
   validarPedido,
   calcularTotal,
+  esAtrasado,
+  hoyTexto,
 } from "../../lib/logica";
 
 
@@ -30,6 +32,20 @@ export default function Pruebas() {
     ["Total normal (3855)", calcularTotal([{ piezas: 20, precio_unitario: 150 }, { piezas: 10, precio_unitario: 85.5 }])],
     ["Total con centavos (30.3)", calcularTotal([{ piezas: 3, precio_unitario: 10.1 }])],
     ["Total sin prendas (0)", calcularTotal([])],
+
+    ["Vence hoy (false)",
+     esAtrasado({ estado: "Pendiente", fecha_compromiso: hoyTexto() })],
+    ["Ya venció (true)",
+     esAtrasado({ estado: "Pendiente", fecha_compromiso: "2020-01-01" })],
+    ["Entregado con fecha pasada (false)",
+     esAtrasado({ estado: "Entregado", fecha_compromiso: "2020-01-01" })],
+    ["Fecha futura (false)",
+     esAtrasado({ estado: "Pendiente", fecha_compromiso: "2030-01-01" })],
+    ["Cancelado con fecha pasada (false)",
+     esAtrasado({ estado: "Cancelado", fecha_compromiso: "2020-01-01" })],
+    ["En proceso con fecha pasada (true)",
+     esAtrasado({ estado: "En proceso", fecha_compromiso: "2020-01-01" })],
+
   ];
 
 
