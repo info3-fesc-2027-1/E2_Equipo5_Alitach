@@ -58,14 +58,14 @@ Las dos deben estar en Vercel marcadas para **Production y Preview**. En local v
 
 | # | Verificación | ¿Cumple? (Sí / No) | Responsable |
 |---|---|---|---|
-| 1 | Los 4 PR que faltan (#4 opciones, #6 catálogo, #3 `esAtrasado`, #2 nuevo pedido) siguen aprobados por su revisora y su vista previa de Vercel dice *Ready* (#5 clientes ya está en `main`) | | Aura |
-| 2 | En cada rama, `npm run build` termina sin errores (ningún import con `@/lib`) | | Cada autora |
-| 3 | En `/pruebas` todos los casos salen correctos, incluidos los de `esAtrasado` y `validarOpcion` | | Achtli |
-| 4 | Las variables `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` están en Vercel para Production y Preview | | Aura |
-| 5 | La vista previa del último PR abre `/catalogo` y `/nuevo-pedido` sin el error "supabaseUrl is required" | | Francisca |
-| 6 | Las tablas de Supabase tienen las columnas que usa el código (confirmado por Shirel el 8 nov: estados con mayúscula inicial, `prenda_pedido` con `opcion_id`, `pedido` con `fecha_compromiso_original`) y RLS no bloquea guardar ni leer | | Shirel |
-| 7 | No hay claves ni archivos `.env` subidos al repositorio | | Francisca |
-| 8 | Anotamos el último despliegue de producción que funciona (fecha y commit) antes de desplegar | | Aura |
+| 1 | Los 4 PR que faltan (#4 opciones, #6 catálogo, #3 `esAtrasado`, #2 nuevo pedido) siguen aprobados por su revisora y su vista previa de Vercel dice *Ready* (#5 clientes ya está en `main`) | Sí | Aura |
+| 2 | En cada rama, `npm run build` termina sin errores (ningún import con `@/lib`) | Sí | Cada autora |
+| 3 | En `/pruebas` todos los casos salen correctos, incluidos los de `esAtrasado` y `validarOpcion` | Sí | Achtli |
+| 4 | Las variables `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` están en Vercel para Production y Preview | Sí | Aura |
+| 5 | La vista previa del último PR abre `/catalogo` y `/nuevo-pedido` sin el error "supabaseUrl is required" | Sí | Francisca |
+| 6 | Las tablas de Supabase tienen las columnas que usa el código (confirmado por Shirel el 8 nov: estados con mayúscula inicial, `prenda_pedido` con `opcion_id`, `pedido` con `fecha_compromiso_original`) y RLS no bloquea guardar ni leer | Sí | Shirel |
+| 7 | No hay claves ni archivos `.env` subidos al repositorio | Sí | Francisca |
+| 8 | Anotamos el último despliegue de producción que funciona (fecha y commit) antes de desplegar | Sí: commit `4cfdd8b` (merge del PR #7), 8 nov 21:09, Production · Ready | Aura |
 
 ---
 
@@ -75,11 +75,17 @@ Todas las pruebas se hacen en https://e2equipo5alitach.vercel.app, no en local.
 
 | # | Acción | Resultado esperado | Resultado obtenido (se llena el lunes) |
 |---|---|---|---|
-| 1 | Abrir la portada y `/pruebas` desde un celular y una computadora | La portada carga y en `/pruebas` todos los casos salen correctos | |
-| 2 | Registrar un cliente con nombre y teléfono; buscarlo escribiendo parte del nombre. Intentar registrar otro sin teléfono ni correo | El primero aparece en la búsqueda; el segundo se rechaza con mensaje | |
-| 3 | En `/catalogo`, registrar un chaleco de seguridad y una opción de bordado | Los dos aparecen en sus listas después de recargar la página | |
-| 4 | En `/nuevo-pedido`, elegir un cliente y crear un pedido de 20 chalecos bordados y 10 playeras serigrafiadas con fecha compromiso | Se guarda, muestra el total y queda en Pendiente | |
-| 5 | Intentar guardar un pedido sin fecha compromiso o con una fecha pasada | El sistema lo rechaza y muestra el error | |
+| 1 | Abrir la portada y `/pruebas` desde un celular y una computadora | La portada carga y en `/pruebas` todos los casos salen correctos | Correcto. La portada carga en computadora y celular; en `/pruebas` todos los casos coinciden, incluidos `esAtrasado` y `validarOpcion`. |
+| 2 | Registrar un cliente con nombre y teléfono; buscarlo escribiendo parte del nombre. Intentar registrar otro sin teléfono ni correo | El primero aparece en la búsqueda; el segundo se rechaza con mensaje | Correcto. Se guardó «Uniformes del Valle» y aparece al buscar «valle»; un cliente sin teléfono ni correo se rechaza con «Debe tener teléfono o correo». Hallazgo: el sistema permite registrar clientes repetidos. |
+| 3 | En `/catalogo`, registrar un chaleco de seguridad y una opción de bordado | Los dos aparecen en sus listas después de recargar la página | Correcto. El chaleco y la opción de bordado siguen en sus listas después de recargar. |
+| 4 | En `/nuevo-pedido`, elegir un cliente y crear un pedido de 20 chalecos bordados y 10 playeras serigrafiadas con fecha compromiso | Se guarda, muestra el total y queda en Pendiente | Correcto. Total $3,905.00; dice «Pedido guardado en Pendiente» y en Supabase el pedido tiene estado Pendiente y `fecha_compromiso_original`. |
+| 5 | Intentar guardar un pedido sin fecha compromiso o con una fecha pasada | El sistema lo rechaza y muestra el error | Correcto. Sin fecha: «Falta la fecha compromiso». Con fecha pasada: «La fecha compromiso no puede ser anterior a hoy». En Supabase no se creó ningún pedido. |
+
+### Resultado del despliegue (lunes 9 nov)
+
+- Merges en el orden del plan: #4 (Achtli, 16:36), #6 (Aura, 16:38), #3 (Francisca, 16:41) y #2 (Achtli, 16:42). Los cuatro quedaron *Ready* en Vercel; en producción quedó el commit `afceffa`.
+- Las 5 pruebas del smoke test pasaron. No fue necesario revertir.
+- Hallazgos para la vuelta 3: (1) al guardar un pedido cuya prenda no tiene producto, en pantalla sale un error, pero en Supabase se crea el pedido sin prendas; se corrige validando el producto en `validarPedido` y borrando el pedido en `guardarPedido` si fallan las prendas. (2) Se pueden registrar clientes repetidos.
 
 ---
 
