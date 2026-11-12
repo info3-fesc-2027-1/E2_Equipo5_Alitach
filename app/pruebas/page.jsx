@@ -15,6 +15,10 @@ export default function Pruebas() {
     ["Cliente completo", validarCliente({ nombre: "Ana", telefono: "5512345678" })],
     ["Cliente sin contacto", validarCliente({ nombre: "Ana" })],
     ["Cliente sin nombre", validarCliente({ nombre: "", correo: "ana@correo.com" })],
+    ["Teléfono con letras (false)", validarCliente({ nombre: "Ana", telefono: "abc" })],    
+    ["Teléfono de 8 números (false)", validarCliente({ nombre: "Ana", telefono: "12345678" })],    
+    ["Correo sin @ (false)", validarCliente({ nombre: "Ana", correo: "ana.correo.com" })],    
+    ["Teléfono con solo espacios (false)", validarCliente({ nombre: "Ana", telefono: "   " })],
 
 
     // Francisca
