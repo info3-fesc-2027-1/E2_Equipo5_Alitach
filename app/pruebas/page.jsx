@@ -6,6 +6,7 @@ import {
   calcularTotal,
   esAtrasado,
   hoyTexto,
+  validarCancelacion,
 } from "../../lib/logica";
 
 
@@ -27,7 +28,11 @@ export default function Pruebas() {
     ["Producto vacío y precio negativo", validarProducto({ tipo_prenda: "", precio: -5 })],
     ["Opción completa", validarOpcion({ tipo: "Bordado", descripcion: "Logo en el pecho", precio: 25 })],
     ["Opción sin descripción", validarOpcion({ tipo: "Serigrafía", descripcion: "", precio: 20 })],
-
+        ["Cancelar sin motivo (false)", validarCancelacion({ estado: "Pendiente" }, "")],
+    ["Motivo con solo espacios (false)", validarCancelacion({ estado: "Pendiente" }, "   ")],
+    ["Cancelar un entregado (false)", validarCancelacion({ estado: "Entregado" }, "El cliente ya no lo quiere")],
+    ["Cancelar un cancelado (false)", validarCancelacion({ estado: "Cancelado" }, "Pedido repetido")],
+    ["Cancelar con motivo (true)", validarCancelacion({ estado: "En proceso" }, "El cliente cambió el diseño")],
 
     // Achtli
     ["Pedido sin prendas", validarPedido({ cliente_id: 1, prendas: [], fecha_compromiso: "2030-01-01" })],
