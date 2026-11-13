@@ -7,7 +7,10 @@ import {
   esAtrasado,
   hoyTexto,
   validarCancelacion,
+  puedeCambiarEstado,
 } from "../../lib/logica";
+
+
 
 
 export default function Pruebas() {
@@ -20,7 +23,12 @@ export default function Pruebas() {
     ["Teléfono de 8 números (false)", validarCliente({ nombre: "Ana", telefono: "12345678" })],    
     ["Correo sin @ (false)", validarCliente({ nombre: "Ana", correo: "ana.correo.com" })],    
     ["Teléfono con solo espacios (false)", validarCliente({ nombre: "Ana", telefono: "   " })],
-
+    ["Pendiente a En proceso (true)", puedeCambiarEstado("Pendiente", "En proceso")],    
+    ["En proceso a Entregado (true)", puedeCambiarEstado("En proceso", "Entregado")],    
+    ["Pendiente a Entregado (false)", puedeCambiarEstado("Pendiente", "Entregado")],    
+    ["Entregado a Pendiente (false)", puedeCambiarEstado("Entregado", "Pendiente")],    
+    ["Cancelado a En proceso (false)", puedeCambiarEstado("Cancelado", "En proceso")],    
+    ["En proceso a Pendiente (false)", puedeCambiarEstado("En proceso", "Pendiente")],
 
     // Francisca
     ["Producto completo", validarProducto({ tipo_prenda: "Chaleco", precio: 250 })],
