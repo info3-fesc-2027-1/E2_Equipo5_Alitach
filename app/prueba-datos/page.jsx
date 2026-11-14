@@ -1,9 +1,10 @@
 "use client";
 import { useState } from "react";
-import { guardarCliente, buscarClientes } from "../../lib/datos";
+import { guardarCliente, buscarClientes, obtenerPedido, obtenerHistorial, obtenerUsuarios } from "../../lib/datos";
 
 export default function PruebaDatos() {
-  const [resultado, setResultado] = useState("");
+ const [resultado, setResultado] = useState("");
+
 
   async function probar() {
     try {
@@ -14,10 +15,20 @@ export default function PruebaDatos() {
       setResultado("Error: " + e.message);
     }
   }
-
+   async function leer() {
+    try {
+      const pedido = await obtenerPedido(1);
+      const historial = await obtenerHistorial(1);
+      const usuarios = await obtenerUsuarios();
+      setResultado(JSON.stringify({ pedido, historial, usuarios }, null, 2));
+    } catch (e) {
+      setResultado("Error: " + e.message);
+    }
+  }
   return (
     <main>
-      <button onClick={probar}>Guardar y leer cliente</button>
+     <button onClick={probar}>Guardar y leer cliente</button>{" "}
+      <button onClick={leer}>Leer pedido 1 y usuarios</button>
       <pre>{resultado}</pre>
     </main>
   );
