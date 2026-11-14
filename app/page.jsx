@@ -9,6 +9,7 @@ export default function Inicio() {
         <li><a href="/clientes">Clientes</a></li>
         <li><a href="/catalogo">Catálogo</a></li>
         <li><a href="/nuevo-pedido">Nuevo pedido</a></li>
+        <li><a href="/pedidos">Pedidos</a></li>
         <li><a href="/pruebas">Pruebas de lógica</a></li>
         <li><a href="/prueba-datos">Prueba de datos (Supabase)</a></li>
       </ul>
