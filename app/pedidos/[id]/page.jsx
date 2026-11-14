@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation"; 
 import { obtenerPedido, obtenerHistorial } from "../../../lib/datos"; 
 import CambiarEstado from "./CambiarEstado"; 
-// Francisca: aquí va el import de CancelarPedido 
+import CancelarPedido from "./CancelarPedido";
 import { calcularTotal, esAtrasado } from "../../../lib/logica"; 
 // Achtli: aquí va el import de CambiarFecha 
 
@@ -109,7 +109,7 @@ export default function DetallePedido() {
                 <h2>Cambiar estado</h2>      
                 <CambiarEstado pedido={pedido} alCambiar={cargar} />      
                 
-                {/* Francisca: aquí va <CancelarPedido /> */}      
+                <CancelarPedido pedido={pedido} alCambiar={cargar} />      
                 
                 <h2>Historial</h2>      
                 {historial.length === 0 ? (        
