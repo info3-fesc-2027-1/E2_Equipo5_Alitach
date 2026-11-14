@@ -10,6 +10,7 @@ import {
   puedeCambiarEstado,
   puedeModificarFecha,
   ordenarPedidos,
+  calcularPrecioPieza,
 } from "../../lib/logica";
 
 const listaOrden = [
@@ -50,6 +51,9 @@ export default function Pruebas() {
     ["Cancelar un entregado (false)", validarCancelacion({ estado: "Entregado" }, "El cliente ya no lo quiere")],
     ["Cancelar un cancelado (false)", validarCancelacion({ estado: "Cancelado" }, "Pedido repetido")],
     ["Cancelar con motivo (true)", validarCancelacion({ estado: "En proceso" }, "El cliente cambió el diseño")],
+    ["Chaleco 150 con bordado 25 (175)", calcularPrecioPieza({ precio: 150 }, { precio: 25 })],
+    ["Sin personalización (150)", calcularPrecioPieza({ precio: 150 }, undefined)],
+    ["Precios con centavos (105.75)", calcularPrecioPieza({ precio: 85.5 }, { precio: 20.25 })],
 
     // Achtli
     ["Pedido sin prendas", validarPedido({ cliente_id: 1, prendas: [], fecha_compromiso: "2030-01-01" })],
