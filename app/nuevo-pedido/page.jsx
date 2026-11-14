@@ -3,7 +3,7 @@
 // Pantalla de nuevo pedido (RF3): elegir cliente, agregar prendas y fecha compromiso
 
 import { useState, useEffect } from "react";
-import { validarPedido, calcularTotal } from "../../lib/logica";
+import { validarPedido, calcularTotal, calcularPrecioPieza } from "../../lib/logica";
 import { buscarClientes, obtenerProductos, obtenerOpciones, guardarPedido } from "../../lib/datos";
 
 const PRENDA_VACIA = { producto_id: "", opcion_id: "", piezas: 1, talla: "", color: "", precio_unitario: 0 };
@@ -44,15 +44,20 @@ export default function NuevoPedido() {
     setPrendas(nuevas);
   }
 
-  // Al elegir un producto, se copia su precio del catálogo
+    // Al elegir producto u opción, el precio por pieza = producto + opción (RF3)
   function elegirProducto(index, id) {
-    const producto = productos.find((p) => String(p.id) === id);
     const nuevas = [...prendas];
-    nuevas[index] = {
-      ...nuevas[index],
-      producto_id: id,
-      precio_unitario: producto ? Number(producto.precio) : 0,
-    };
+    const producto = productos.find((p) => String(p.id) === id);
+    const opcion = opciones.find((o) => String(o.id) === String(nuevas[index].opcion_id));
+    nuevas[index] = { ...nuevas[index], producto_id: id, precio_unitario: calcularPrecioPieza(producto, opcion) };
+    setPrendas(nuevas);
+  }
+
+  function elegirOpcion(index, id) {
+    const nuevas = [...prendas];
+    const producto = productos.find((p) => String(p.id) === String(nuevas[index].producto_id));
+    const opcion = opciones.find((o) => String(o.id) === id);
+    nuevas[index] = { ...nuevas[index], opcion_id: id, precio_unitario: calcularPrecioPieza(producto, opcion) };
     setPrendas(nuevas);
   }
 
@@ -120,7 +125,7 @@ export default function NuevoPedido() {
                 <option key={p.id} value={p.id}>{p.tipo_prenda} · {p.modelo}</option>
               ))}
             </select>{" "}
-            <select value={prenda.opcion_id} onChange={(e) => cambiarPrenda(index, "opcion_id", e.target.value)}>
+            <select value={prenda.opcion_id} onChange={(e) => elegirOpcion(index, e.target.value)}>
               <option value="">Sin personalización</option>
               {opciones.map((o) => (
                 <option key={o.id} value={o.id}>{o.tipo} · {o.descripcion}</option>
