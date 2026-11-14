@@ -9,8 +9,16 @@ import {
   validarCancelacion,
   puedeCambiarEstado,
   puedeModificarFecha,
+  ordenarPedidos,
 } from "../../lib/logica";
 
+const listaOrden = [
+  { id: 1, estado: "Entregado", fecha_compromiso: "2020-01-01" },
+  { id: 2, estado: "Pendiente", fecha_compromiso: "2030-01-01" },
+  { id: 3, estado: "Cancelado", fecha_compromiso: "2020-01-01" },
+  { id: 4, estado: "En proceso", fecha_compromiso: "2020-06-01" },
+  { id: 5, estado: "Pendiente", fecha_compromiso: "2021-01-01" },
+];
 
 
 
@@ -79,9 +87,11 @@ export default function Pruebas() {
     ["Fecha futura En proceso (true)",
       puedeModificarFecha({ estado: "En proceso", fecha_compromiso: "2030-01-01" }, "2031-01-01")],
 
-  ];
-
-
+    // Shirel 
+    ["Orden atrasados primero (4,5,2,1,3)", ordenarPedidos(listaOrden).map((p) => p.id).join(",")],
+    ["Lista vacía ([])", ordenarPedidos([])],
+    ["La lista original no cambia (1,2,3,4,5)", listaOrden.map((p) => p.id).join(",")],
+    ];
   return (
     <main>
       <h1>Pruebas de lógica</h1>
