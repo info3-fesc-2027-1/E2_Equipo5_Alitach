@@ -6,7 +6,7 @@ import { obtenerPedido, obtenerHistorial } from "../../../lib/datos";
 import CambiarEstado from "./CambiarEstado"; 
 import CancelarPedido from "./CancelarPedido";
 import { calcularTotal, esAtrasado } from "../../../lib/logica"; 
-// Achtli: aquí va el import de CambiarFecha 
+import CambiarFecha from "./CambiarFecha";
 
 export default function DetallePedido() {  
     const { id } = useParams();  
@@ -125,7 +125,7 @@ export default function DetallePedido() {
                     </ul>      
                     )}     
                     
-                    {/* Achtli: aquí va <CambiarFecha /> */}    
+                     <CambiarFecha pedido={pedido} alCambiar={cargar} />   
                 </main>  
             ); 
         }
