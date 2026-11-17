@@ -3,40 +3,69 @@
 // Pantalla del catálogo (RF2): el personal registra y consulta prendas para cotizar
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { validarProducto, validarOpcion } from "../../lib/logica";
-import { guardarProducto, obtenerProductos, guardarOpcion, obtenerOpciones } from "../../lib/datos";
+import {
+  guardarProducto,
+  obtenerProductos,
+  guardarOpcion,
+  obtenerOpciones,
+} from "../../lib/datos";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { EncabezadoPagina, ListaErrores, Pagina, dinero } from "@/components/comunes";
+
+const PRODUCTO_VACIO = { tipo_prenda: "", modelo: "", colores: "", precio: "" };
+const OPCION_VACIA = { tipo: "Bordado", descripcion: "", precio: "" };
 
 export default function Catalogo() {
-  const [producto, setProducto] = useState({
-    tipo_prenda: "",
-    modelo: "",
-    colores: "",
-    precio: "",
-  });
-  const [errores, setErrores] = useState([]);
-  const [mensaje, setMensaje] = useState("");
+  const [producto, setProducto] = useState(PRODUCTO_VACIO);
+  const [erroresProducto, setErroresProducto] = useState([]);
+  const [erroresOpcion, setErroresOpcion] = useState([]);
   const [productos, setProductos] = useState([]);
-  const [opcion, setOpcion] = useState({ tipo: "Bordado", descripcion: "", precio: "" });
+  const [opcion, setOpcion] = useState(OPCION_VACIA);
   const [opciones, setOpciones] = useState([]);
   const [guardando, setGuardando] = useState(false);
 
   // Trae de Supabase la lista de productos
   async function cargarProductos() {
     try {
-      const lista = await obtenerProductos();
-      setProductos(lista);
+      setProductos(await obtenerProductos());
     } catch (error) {
-      setMensaje("Error al cargar el catálogo: " + error.message);
+      setErroresProducto(["Error al cargar el catálogo: " + error.message]);
     }
   }
 
   // Trae de Supabase las opciones de bordado y serigrafía
   async function cargarOpciones() {
     try {
-      const lista = await obtenerOpciones();
-      setOpciones(lista);
+      setOpciones(await obtenerOpciones());
     } catch (error) {
-      setMensaje("Error al cargar las opciones: " + error.message);
+      setErroresOpcion(["Error al cargar las opciones: " + error.message]);
     }
   }
 
@@ -55,8 +84,7 @@ export default function Catalogo() {
   async function registrar(e) {
     e.preventDefault();
     const resultado = validarProducto(producto);
-    setErrores(resultado.errores);
-    setMensaje("");
+    setErroresProducto(resultado.errores);
 
     if (!resultado.valido) {
       return;
@@ -65,11 +93,11 @@ export default function Catalogo() {
     setGuardando(true);
     try {
       await guardarProducto({ ...producto, precio: Number(producto.precio) });
-      setMensaje("Producto guardado.");
-      setProducto({ tipo_prenda: "", modelo: "", colores: "", precio: "" });
+      toast.success("Producto guardado.");
+      setProducto(PRODUCTO_VACIO);
       cargarProductos();
     } catch (error) {
-      setMensaje("Error al guardar: " + error.message);
+      setErroresProducto(["Error al guardar: " + error.message]);
     } finally {
       setGuardando(false);
     }
@@ -78,109 +106,220 @@ export default function Catalogo() {
   // Guarda una opción de personalización (bordado o serigrafía)
   async function registrarOpcion(e) {
     e.preventDefault();
-    setMensaje("");
     const resultado = validarOpcion(opcion);
-    setErrores(resultado.errores);
+    setErroresOpcion(resultado.errores);
     if (!resultado.valido) {
       return;
     }
     setGuardando(true);
     try {
       await guardarOpcion({ ...opcion, precio: Number(opcion.precio) });
-      setMensaje("Opción guardada.");
-      setOpcion({ tipo: "Bordado", descripcion: "", precio: "" });
+      toast.success("Opción guardada.");
+      setOpcion(OPCION_VACIA);
       cargarOpciones();
     } catch (error) {
-      setMensaje("Error al guardar la opción: " + error.message);
+      setErroresOpcion(["Error al guardar la opción: " + error.message]);
     } finally {
       setGuardando(false);
     }
   }
 
   return (
-    <main>
-      <h1>Catálogo de productos</h1>
-      <p>Aquí el personal registra y consulta las prendas para cotizar.</p>
+    <Pagina>
+      <EncabezadoPagina
+        titulo="Productos"
+        descripcion="Aquí el personal registra y consulta las prendas para cotizar."
+      />
 
-      <h2>Registrar producto</h2>
-      <form onSubmit={registrar}>
-        <p>
-          <label>
-            Tipo de prenda<br />
-            <input name="tipo_prenda" value={producto.tipo_prenda} onChange={cambiar}
-              placeholder="Ej. Chaleco de seguridad" />
-          </label>
-        </p>
-        <p>
-          <label>
-            Modelo<br />
-            <input name="modelo" value={producto.modelo} onChange={cambiar}
-              placeholder="Ej. Reflejante" />
-          </label>
-        </p>
-        <p>
-          <label>
-            Colores<br />
-            <input name="colores" value={producto.colores} onChange={cambiar}
-              placeholder="Ej. rosa" />
-          </label>
-        </p>
-        <p>
-          <label>
-            Precio (MXN)<br />
-            <input name="precio" type="number" step="0.01" value={producto.precio} onChange={cambiar}
-              placeholder="Ej. 250" />
-          </label>
-        </p>
-        <button type="submit" disabled={guardando}>
-          {guardando ? "Guardando…" : "Registrar"}
-        </button>
-      </form>
+      {/* Productos */}
+      <div className="grid gap-4 lg:grid-cols-[1fr_340px] lg:items-start">
+        <Card className="min-w-0">
+          <CardHeader>
+            <CardTitle>Productos registrados</CardTitle>
+            <CardDescription>{productos.length} productos en el catálogo</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {productos.length === 0 ? (
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                Todavía no hay productos.
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Tipo de prenda</TableHead>
+                    <TableHead>Modelo</TableHead>
+                    <TableHead>Colores</TableHead>
+                    <TableHead className="text-right">Precio</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {productos.map((p) => (
+                    <TableRow key={p.id}>
+                      <TableCell className="font-medium">{p.tipo_prenda}</TableCell>
+                      <TableCell>{p.modelo}</TableCell>
+                      <TableCell>{p.colores || "-"}</TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {dinero(p.precio)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
 
-      {errores.length > 0 && (
-        <ul>
-          {errores.map((error) => (
-            <li key={error}>{error}</li>
-          ))}
-        </ul>
-      )}
-      {mensaje && <p>{mensaje}</p>}
+        <Card>
+          <CardHeader>
+            <CardTitle>Registrar producto</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={registrar} className="space-y-4">
+              <div className="grid gap-1.5">
+                <Label htmlFor="tipo_prenda">Tipo de prenda</Label>
+                <Input
+                  id="tipo_prenda"
+                  name="tipo_prenda"
+                  value={producto.tipo_prenda}
+                  onChange={cambiar}
+                  placeholder="Ej. Chaleco de seguridad"
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="modelo">Modelo</Label>
+                <Input
+                  id="modelo"
+                  name="modelo"
+                  value={producto.modelo}
+                  onChange={cambiar}
+                  placeholder="Ej. Reflejante"
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="colores">Colores</Label>
+                <Input
+                  id="colores"
+                  name="colores"
+                  value={producto.colores}
+                  onChange={cambiar}
+                  placeholder="Ej. Naranja, Amarillo"
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="precio">Precio (MXN)</Label>
+                <Input
+                  id="precio"
+                  name="precio"
+                  type="number"
+                  step="0.01"
+                  value={producto.precio}
+                  onChange={cambiar}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={guardando}>
+                {guardando ? "Guardando…" : "Registrar producto"}
+              </Button>
+              <ListaErrores errores={erroresProducto} />
+            </form>
+          </CardContent>
+        </Card>
+      </div>
 
-      <h2>Productos registrados</h2>
-      {productos.length === 0 ? (
-        <p>Todavía no hay productos.</p>
-      ) : (
-        <ul>
-          {productos.map((p) => (
-            <li key={p.id}>
-              {p.tipo_prenda} · {p.modelo} · {p.colores} · ${p.precio}
-            </li>
-          ))}
-        </ul>
-      )}
+      {/* Opciones de personalización */}
+      <div className="grid gap-4 lg:grid-cols-[1fr_340px] lg:items-start">
+        <Card className="min-w-0">
+          <CardHeader>
+            <CardTitle>Opciones de personalización</CardTitle>
+            <CardDescription>
+              Bordados y serigrafías que se suman al precio de la prenda.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {opciones.length === 0 ? (
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                Todavía no hay opciones.
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Tipo</TableHead>
+                    <TableHead>Descripción</TableHead>
+                    <TableHead className="text-right">Precio</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {opciones.map((o) => (
+                    <TableRow key={o.id}>
+                      <TableCell>
+                        <Badge variant="secondary">{o.tipo}</Badge>
+                      </TableCell>
+                      <TableCell>{o.descripcion}</TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {dinero(o.precio)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
 
-      <h2>Opciones de personalización</h2>
-      <form onSubmit={registrarOpcion}>
-        <select value={opcion.tipo} onChange={(e) => setOpcion({ ...opcion, tipo: e.target.value })}>
-          <option value="Bordado">Bordado</option>
-          <option value="Serigrafía">Serigrafía</option>
-        </select>{" "}
-        <input value={opcion.descripcion} placeholder="Ej. Logo en el pecho"
-          onChange={(e) => setOpcion({ ...opcion, descripcion: e.target.value })} />{" "}
-        <input type="number" step="0.01" value={opcion.precio} placeholder="Precio"
-          onChange={(e) => setOpcion({ ...opcion, precio: e.target.value })} />{" "}
-        <button type="submit" disabled={guardando}>
-          {guardando ? "Guardando…" : "Agregar opción"}
-        </button>
-      </form>
-
-      <ul>
-        {opciones.map((o) => (
-          <li key={o.id}>
-            {o.tipo} · {o.descripcion} · ${o.precio}
-          </li>
-        ))}
-      </ul>
-    </main>
+        <Card>
+          <CardHeader>
+            <CardTitle>Agregar opción</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={registrarOpcion} className="space-y-4">
+              <div className="grid gap-1.5">
+                <Label>Tipo</Label>
+                <Select
+                  value={opcion.tipo}
+                  onValueChange={(v) => setOpcion({ ...opcion, tipo: v })}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Bordado">Bordado</SelectItem>
+                    <SelectItem value="Serigrafía">Serigrafía</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="descripcion">Descripción</Label>
+                <Input
+                  id="descripcion"
+                  value={opcion.descripcion}
+                  placeholder="Ej. Logo en el pecho"
+                  onChange={(e) => setOpcion({ ...opcion, descripcion: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor="precio-opcion">Precio (MXN)</Label>
+                <Input
+                  id="precio-opcion"
+                  type="number"
+                  step="0.01"
+                  value={opcion.precio}
+                  onChange={(e) => setOpcion({ ...opcion, precio: e.target.value })}
+                />
+              </div>
+              <Button
+                type="submit"
+                variant="outline"
+                className="w-full"
+                disabled={guardando}
+              >
+                {guardando ? "Guardando…" : "Agregar opción"}
+              </Button>
+              <ListaErrores errores={erroresOpcion} />
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </Pagina>
   );
 }
