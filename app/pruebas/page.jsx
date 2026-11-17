@@ -12,6 +12,17 @@ import {
   ordenarPedidos,
   calcularPrecioPieza,
 } from "../../lib/logica";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { EncabezadoPagina, Pagina } from "@/components/comunes";
 
 const listaOrden = [
   { id: 1, estado: "Entregado", fecha_compromiso: "2020-01-01" },
@@ -21,87 +32,317 @@ const listaOrden = [
   { id: 5, estado: "Pendiente", fecha_compromiso: "2021-01-01" },
 ];
 
-
-
 export default function Pruebas() {
   const casos = [
     // Aura
-    ["Cliente completo", validarCliente({ nombre: "Ana", telefono: "5512345678" })],
+    [
+      "Cliente completo",
+      validarCliente({ nombre: "Ana", telefono: "5512345678" }),
+    ],
     ["Cliente sin contacto", validarCliente({ nombre: "Ana" })],
-    ["Cliente sin nombre", validarCliente({ nombre: "", correo: "ana@correo.com" })],
-    ["Teléfono con letras (false)", validarCliente({ nombre: "Ana", telefono: "abc" })],
-    ["Teléfono de 8 números (false)", validarCliente({ nombre: "Ana", telefono: "12345678" })],
-    ["Correo sin @ (false)", validarCliente({ nombre: "Ana", correo: "ana.correo.com" })],
-    ["Teléfono con solo espacios (false)", validarCliente({ nombre: "Ana", telefono: "   " })],
-    ["Pendiente a En proceso (true)", puedeCambiarEstado("Pendiente", "En proceso")],
-    ["En proceso a Entregado (true)", puedeCambiarEstado("En proceso", "Entregado")],
-    ["Pendiente a Entregado (false)", puedeCambiarEstado("Pendiente", "Entregado")],
-    ["Entregado a Pendiente (false)", puedeCambiarEstado("Entregado", "Pendiente")],
-    ["Cancelado a En proceso (false)", puedeCambiarEstado("Cancelado", "En proceso")],
-    ["En proceso a Pendiente (false)", puedeCambiarEstado("En proceso", "Pendiente")],
+    [
+      "Cliente sin nombre",
+      validarCliente({ nombre: "", correo: "ana@correo.com" }),
+    ],
+    [
+      "Teléfono con letras (false)",
+      validarCliente({ nombre: "Ana", telefono: "abc" }),
+    ],
+    [
+      "Teléfono de 8 números (false)",
+      validarCliente({ nombre: "Ana", telefono: "12345678" }),
+    ],
+    [
+      "Correo sin @ (false)",
+      validarCliente({ nombre: "Ana", correo: "ana.correo.com" }),
+    ],
+    [
+      "Teléfono con solo espacios (false)",
+      validarCliente({ nombre: "Ana", telefono: "   " }),
+    ],
+    [
+      "Pendiente a En proceso (true)",
+      puedeCambiarEstado("Pendiente", "En proceso"),
+    ],
+    [
+      "En proceso a Entregado (true)",
+      puedeCambiarEstado("En proceso", "Entregado"),
+    ],
+    [
+      "Pendiente a Entregado (false)",
+      puedeCambiarEstado("Pendiente", "Entregado"),
+    ],
+    [
+      "Entregado a Pendiente (false)",
+      puedeCambiarEstado("Entregado", "Pendiente"),
+    ],
+    [
+      "Cancelado a En proceso (false)",
+      puedeCambiarEstado("Cancelado", "En proceso"),
+    ],
+    [
+      "En proceso a Pendiente (false)",
+      puedeCambiarEstado("En proceso", "Pendiente"),
+    ],
 
     // Francisca
-    ["Producto completo", validarProducto({ tipo_prenda: "Chaleco", precio: 250 })],
+    [
+      "Producto completo",
+      validarProducto({ tipo_prenda: "Chaleco", precio: 250 }),
+    ],
     ["Producto sin precio", validarProducto({ tipo_prenda: "Chaleco" })],
-    ["Producto vacío y precio negativo", validarProducto({ tipo_prenda: "", precio: -5 })],
-    ["Opción completa", validarOpcion({ tipo: "Bordado", descripcion: "Logo en el pecho", precio: 25 })],
-    ["Opción sin descripción", validarOpcion({ tipo: "Serigrafía", descripcion: "", precio: 20 })],
-    ["Cancelar sin motivo (false)", validarCancelacion({ estado: "Pendiente" }, "")],
-    ["Motivo con solo espacios (false)", validarCancelacion({ estado: "Pendiente" }, "   ")],
-    ["Cancelar un entregado (false)", validarCancelacion({ estado: "Entregado" }, "El cliente ya no lo quiere")],
-    ["Cancelar un cancelado (false)", validarCancelacion({ estado: "Cancelado" }, "Pedido repetido")],
-    ["Cancelar con motivo (true)", validarCancelacion({ estado: "En proceso" }, "El cliente cambió el diseño")],
-    ["Chaleco 150 con bordado 25 (175)", calcularPrecioPieza({ precio: 150 }, { precio: 25 })],
-    ["Sin personalización (150)", calcularPrecioPieza({ precio: 150 }, undefined)],
-    ["Precios con centavos (105.75)", calcularPrecioPieza({ precio: 85.5 }, { precio: 20.25 })],
+    [
+      "Producto vacío y precio negativo",
+      validarProducto({ tipo_prenda: "", precio: -5 }),
+    ],
+    [
+      "Opción completa",
+      validarOpcion({
+        tipo: "Bordado",
+        descripcion: "Logo en el pecho",
+        precio: 25,
+      }),
+    ],
+    [
+      "Opción sin descripción",
+      validarOpcion({ tipo: "Serigrafía", descripcion: "", precio: 20 }),
+    ],
+    [
+      "Cancelar sin motivo (false)",
+      validarCancelacion({ estado: "Pendiente" }, ""),
+    ],
+    [
+      "Motivo con solo espacios (false)",
+      validarCancelacion({ estado: "Pendiente" }, "   "),
+    ],
+    [
+      "Cancelar un entregado (false)",
+      validarCancelacion({ estado: "Entregado" }, "El cliente ya no lo quiere"),
+    ],
+    [
+      "Cancelar un cancelado (false)",
+      validarCancelacion({ estado: "Cancelado" }, "Pedido repetido"),
+    ],
+    [
+      "Cancelar con motivo (true)",
+      validarCancelacion(
+        { estado: "En proceso" },
+        "El cliente cambió el diseño",
+      ),
+    ],
+    [
+      "Chaleco 150 con bordado 25 (175)",
+      calcularPrecioPieza({ precio: 150 }, { precio: 25 }),
+    ],
+    [
+      "Sin personalización (150)",
+      calcularPrecioPieza({ precio: 150 }, undefined),
+    ],
+    [
+      "Precios con centavos (105.75)",
+      calcularPrecioPieza({ precio: 85.5 }, { precio: 20.25 }),
+    ],
 
     // Achtli
-    ["Pedido sin prendas", validarPedido({ cliente_id: 1, prendas: [], fecha_compromiso: "2030-01-01" })],
-    ["Pedido con fecha pasada", validarPedido({ cliente_id: 1, prendas: [{ producto_id: 1, piezas: 2 }], fecha_compromiso: "2020-01-01" })],
-    ["Pedido completo", validarPedido({ cliente_id: 1, prendas: [{ producto_id: 1, piezas: 2 }], fecha_compromiso: "2030-01-01" })],
-    ["Prenda sin producto (false)", validarPedido({ cliente_id: 1, prendas: [{ piezas: 2 }], fecha_compromiso: "2030-01-01" })],
-    ["Piezas con decimales (false)", validarPedido({ cliente_id: 1, prendas: [{ producto_id: 1, piezas: 1.5 }], fecha_compromiso: "2030-01-01" })],
-    ["Total normal (3855)", calcularTotal([{ piezas: 20, precio_unitario: 150 }, { piezas: 10, precio_unitario: 85.5 }])],
-    ["Total con centavos (30.3)", calcularTotal([{ piezas: 3, precio_unitario: 10.1 }])],
+    [
+      "Pedido sin prendas",
+      validarPedido({
+        cliente_id: 1,
+        prendas: [],
+        fecha_compromiso: "2030-01-01",
+      }),
+    ],
+    [
+      "Pedido con fecha pasada",
+      validarPedido({
+        cliente_id: 1,
+        prendas: [{ producto_id: 1, piezas: 2 }],
+        fecha_compromiso: "2020-01-01",
+      }),
+    ],
+    [
+      "Pedido completo",
+      validarPedido({
+        cliente_id: 1,
+        prendas: [{ producto_id: 1, piezas: 2 }],
+        fecha_compromiso: "2030-01-01",
+      }),
+    ],
+    [
+      "Prenda sin producto (false)",
+      validarPedido({
+        cliente_id: 1,
+        prendas: [{ piezas: 2 }],
+        fecha_compromiso: "2030-01-01",
+      }),
+    ],
+    [
+      "Piezas con decimales (false)",
+      validarPedido({
+        cliente_id: 1,
+        prendas: [{ producto_id: 1, piezas: 1.5 }],
+        fecha_compromiso: "2030-01-01",
+      }),
+    ],
+    [
+      "Total normal (3855)",
+      calcularTotal([
+        { piezas: 20, precio_unitario: 150 },
+        { piezas: 10, precio_unitario: 85.5 },
+      ]),
+    ],
+    [
+      "Total con centavos (30.3)",
+      calcularTotal([{ piezas: 3, precio_unitario: 10.1 }]),
+    ],
     ["Total sin prendas (0)", calcularTotal([])],
+    [
+      "Vence hoy (false)",
+      esAtrasado({ estado: "Pendiente", fecha_compromiso: hoyTexto() }),
+    ],
+    [
+      "Ya venció (true)",
+      esAtrasado({ estado: "Pendiente", fecha_compromiso: "2020-01-01" }),
+    ],
+    [
+      "Entregado con fecha pasada (false)",
+      esAtrasado({ estado: "Entregado", fecha_compromiso: "2020-01-01" }),
+    ],
+    [
+      "Fecha futura (false)",
+      esAtrasado({ estado: "Pendiente", fecha_compromiso: "2030-01-01" }),
+    ],
+    [
+      "Cancelado con fecha pasada (false)",
+      esAtrasado({ estado: "Cancelado", fecha_compromiso: "2020-01-01" }),
+    ],
+    [
+      "En proceso con fecha pasada (true)",
+      esAtrasado({ estado: "En proceso", fecha_compromiso: "2020-01-01" }),
+    ],
+    [
+      "Cambiar a fecha pasada (false)",
+      puedeModificarFecha(
+        { estado: "Pendiente", fecha_compromiso: "2030-01-01" },
+        "2020-01-01",
+      ),
+    ],
+    [
+      "Cambiar fecha de un entregado (false)",
+      puedeModificarFecha(
+        { estado: "Entregado", fecha_compromiso: "2030-01-01" },
+        "2031-01-01",
+      ),
+    ],
+    [
+      "Misma fecha que la actual (false)",
+      puedeModificarFecha(
+        { estado: "Pendiente", fecha_compromiso: "2030-01-01" },
+        "2030-01-01",
+      ),
+    ],
+    [
+      "Fecha vacía (false)",
+      puedeModificarFecha(
+        { estado: "Pendiente", fecha_compromiso: "2030-01-01" },
+        "",
+      ),
+    ],
+    [
+      "Fecha futura en Pendiente (true)",
+      puedeModificarFecha(
+        { estado: "Pendiente", fecha_compromiso: "2030-01-01" },
+        "2031-01-01",
+      ),
+    ],
+    [
+      "Fecha futura En proceso (true)",
+      puedeModificarFecha(
+        { estado: "En proceso", fecha_compromiso: "2030-01-01" },
+        "2031-01-01",
+      ),
+    ],
 
-    ["Vence hoy (false)",
-      esAtrasado({ estado: "Pendiente", fecha_compromiso: hoyTexto() })],
-    ["Ya venció (true)",
-      esAtrasado({ estado: "Pendiente", fecha_compromiso: "2020-01-01" })],
-    ["Entregado con fecha pasada (false)",
-      esAtrasado({ estado: "Entregado", fecha_compromiso: "2020-01-01" })],
-    ["Fecha futura (false)",
-      esAtrasado({ estado: "Pendiente", fecha_compromiso: "2030-01-01" })],
-    ["Cancelado con fecha pasada (false)",
-      esAtrasado({ estado: "Cancelado", fecha_compromiso: "2020-01-01" })],
-    ["En proceso con fecha pasada (true)",
-      esAtrasado({ estado: "En proceso", fecha_compromiso: "2020-01-01" })],
-
-    ["Cambiar a fecha pasada (false)",
-      puedeModificarFecha({ estado: "Pendiente", fecha_compromiso: "2030-01-01" }, "2020-01-01")],
-    ["Cambiar fecha de un entregado (false)",
-      puedeModificarFecha({ estado: "Entregado", fecha_compromiso: "2030-01-01" }, "2031-01-01")],
-    ["Misma fecha que la actual (false)",
-      puedeModificarFecha({ estado: "Pendiente", fecha_compromiso: "2030-01-01" }, "2030-01-01")],
-    ["Fecha vacía (false)",
-      puedeModificarFecha({ estado: "Pendiente", fecha_compromiso: "2030-01-01" }, "")],
-    ["Fecha futura en Pendiente (true)",
-      puedeModificarFecha({ estado: "Pendiente", fecha_compromiso: "2030-01-01" }, "2031-01-01")],
-    ["Fecha futura En proceso (true)",
-      puedeModificarFecha({ estado: "En proceso", fecha_compromiso: "2030-01-01" }, "2031-01-01")],
-
-    // Shirel 
-    ["Orden atrasados primero (4,5,2,1,3)", ordenarPedidos(listaOrden).map((p) => p.id).join(",")],
+    // Shirel
+    [
+      "Orden atrasados primero (4,5,2,1,3)",
+      ordenarPedidos(listaOrden)
+        .map((p) => p.id)
+        .join(","),
+    ],
     ["Lista vacía ([])", ordenarPedidos([])],
-    ["La lista original no cambia (1,2,3,4,5)", listaOrden.map((p) => p.id).join(",")],
-    ];
+    [
+      "La lista original no cambia (1,2,3,4,5)",
+      listaOrden.map((p) => p.id).join(","),
+    ],
+  ];
   return (
-    <main>
-      <h1>Pruebas de lógica</h1>
-      {casos.map(([nombre, resultado]) => (
-        <pre key={nombre}>{nombre}: {JSON.stringify(resultado)}</pre>
-      ))}
-    </main>
+    <Pagina>
+      {" "}
+      <EncabezadoPagina
+        titulo="Pruebas de lógica"
+        descripcion={
+          casos.length +
+          " casos de lib/logica.js. Compara el resultado con lo esperado entre paréntesis."
+        }
+      />{" "}
+      <Card className="gap-0 py-0">
+        {" "}
+        <CardContent className="p-0">
+          {" "}
+          <Table>
+            {" "}
+            <TableHeader>
+              {" "}
+              <TableRow>
+                {" "}
+                <TableHead className="pl-4">Caso</TableHead>{" "}
+                <TableHead>Válido</TableHead>{" "}
+                <TableHead className="pr-4">Resultado</TableHead>{" "}
+              </TableRow>{" "}
+            </TableHeader>{" "}
+            <TableBody>
+              {" "}
+              {casos.map(([nombre, resultado]) => {
+                const tieneValido =
+                  resultado &&
+                  typeof resultado === "object" &&
+                  "valido" in resultado;
+                return (
+                  <TableRow key={nombre}>
+                    {" "}
+                    <TableCell className="pl-4 font-medium">
+                      {nombre}
+                    </TableCell>{" "}
+                    <TableCell>
+                      {" "}
+                      {tieneValido && (
+                        <Badge
+                          variant="outline"
+                          className={
+                            resultado.valido
+                              ? "border-green-200 bg-green-100 text-green-800"
+                              : "border-red-200 bg-red-100 text-red-700"
+                          }
+                        >
+                          {" "}
+                          {String(resultado.valido)}{" "}
+                        </Badge>
+                      )}{" "}
+                    </TableCell>{" "}
+                    <TableCell
+                      className={`max-w-md pr-4 font-mono text-xs whitespace-normal text-muted-foreground`}
+                    >
+                      {" "}
+                      {JSON.stringify(resultado)}{" "}
+                    </TableCell>{" "}
+                  </TableRow>
+                );
+              })}{" "}
+            </TableBody>{" "}
+          </Table>{" "}
+        </CardContent>{" "}
+      </Card>{" "}
+    </Pagina>
   );
 }
