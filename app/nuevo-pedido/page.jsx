@@ -118,13 +118,15 @@ export default function NuevoPedido() {
     }
     setGuardando(true);
     try {
-      const nuevo = await guardarPedido({
-        cliente_id: clienteId,
-        fecha_compromiso: fechaCompromiso,
-        fecha_compromiso_original: fechaCompromiso,
-        estado: "Pendiente",
-        prendas: prendas.map((p) => ({ ...p, opcion_id: p.opcion_id || null })),
-      });
+      const nuevo = await guardarPedido(
+        {
+          cliente_id: clienteId,
+          fecha_compromiso: fechaCompromiso,
+          fecha_compromiso_original: fechaCompromiso,
+          estado: "Pendiente",
+        },
+        prendas.map((p) => ({ ...p, opcion_id: p.opcion_id || null }))
+      );
       toast.success("Pedido #" + nuevo.id + " guardado en Pendiente.", {
         action: {
           label: "Ver pedido",
