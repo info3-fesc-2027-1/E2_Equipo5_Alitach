@@ -38,6 +38,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { EncabezadoPagina, ListaErrores, Pagina, dinero } from "@/components/comunes";
+import Galeria from "@/components/galeria";
 
 const PRODUCTO_VACIO = { tipo_prenda: "", modelo: "", colores: "", precio: "" };
 const OPCION_VACIA = { tipo: "Bordado", descripcion: "", precio: "" };
@@ -320,6 +321,7 @@ export default function Catalogo() {
           </CardContent>
         </Card>
       </div>
+      <Galeria />
     </Pagina>
   );
 }
