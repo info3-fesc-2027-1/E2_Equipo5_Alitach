@@ -80,137 +80,114 @@ export default function Clientes() {
   }
   return (
     <Pagina>
-      {" "}
       <EncabezadoPagina
         titulo="Clientes"
         descripcion="Registra clientes y búscalos por nombre."
-      />{" "}
+      />
       <div className="grid gap-4 lg:grid-cols-[340px_1fr] lg:items-start">
-        {" "}
         <Card>
-          {" "}
           <CardHeader>
-            {" "}
-            <CardTitle>Registrar cliente</CardTitle>{" "}
-            <CardDescription>Necesita teléfono o correo.</CardDescription>{" "}
-          </CardHeader>{" "}
+            <CardTitle>Registrar cliente</CardTitle>
+            <CardDescription>Necesita teléfono o correo.</CardDescription>
+          </CardHeader>
           <CardContent>
-            {" "}
             <form onSubmit={registrar} className="space-y-4">
-              {" "}
               <div className="grid gap-1.5">
-                {" "}
-                <Label htmlFor="nombre">Nombre</Label>{" "}
+                <Label htmlFor="nombre">Nombre</Label>
                 <Input
                   id="nombre"
                   name="nombre"
                   value={cliente.nombre}
                   onChange={cambiar}
-                />{" "}
-              </div>{" "}
+                />
+              </div>
               <div className="grid gap-1.5">
-                {" "}
-                <Label htmlFor="telefono">Teléfono</Label>{" "}
+                <Label htmlFor="telefono">Teléfono</Label>
                 <Input
                   id="telefono"
                   name="telefono"
                   value={cliente.telefono}
                   onChange={cambiar}
                   placeholder="10 números"
-                />{" "}
-              </div>{" "}
+                />
+              </div>
               <div className="grid gap-1.5">
-                {" "}
-                <Label htmlFor="correo">Correo</Label>{" "}
+                <Label htmlFor="correo">Correo</Label>
                 <Input
                   id="correo"
                   name="correo"
                   type="email"
                   value={cliente.correo}
                   onChange={cambiar}
-                />{" "}
-              </div>{" "}
+                />
+              </div>
               <div className="grid gap-1.5">
-                {" "}
-                <Label htmlFor="notas">Notas de personalización</Label>{" "}
+                <Label htmlFor="notas">Notas de personalización</Label>
                 <Input
                   id="notas"
                   name="notas"
                   value={cliente.notas}
                   onChange={cambiar}
-                />{" "}
-              </div>{" "}
+                />
+              </div>
               <Button type="submit" className="w-full" disabled={guardando}>
-                {" "}
-                {guardando ? "Guardando…" : "Registrar"}{" "}
-              </Button>{" "}
-              <ListaErrores errores={errores} />{" "}
-            </form>{" "}
-          </CardContent>{" "}
-        </Card>{" "}
+                {guardando ? "Guardando…" : "Registrar"}
+              </Button>
+              <ListaErrores errores={errores} />
+            </form>
+          </CardContent>
+        </Card>
         <Card className="min-w-0 gap-0 py-0">
-          {" "}
           <form onSubmit={buscar} className="flex gap-2 border-b p-4">
-            {" "}
             <div className="relative flex-1">
-              {" "}
               <Search
                 className={`absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground`}
-              />{" "}
+              />
               <Input
                 value={texto}
                 onChange={(e) => setTexto(e.target.value)}
                 placeholder="Escribe parte del nombre"
                 className="pl-9"
-              />{" "}
-            </div>{" "}
+              />
+            </div>
             <Button type="submit" variant="outline">
-              {" "}
-              Buscar{" "}
-            </Button>{" "}
-          </form>{" "}
+              Buscar
+            </Button>
+          </form>
           <CardContent className="p-0">
-            {" "}
             {resultados.length === 0 ? (
               <p className="p-10 text-center text-sm text-muted-foreground">
-                {" "}
-                No hay clientes con ese nombre.{" "}
+                No hay clientes con ese nombre.
               </p>
             ) : (
               <Table>
-                {" "}
                 <TableHeader>
-                  {" "}
                   <TableRow>
-                    {" "}
-                    <TableHead className="pl-4">Nombre</TableHead>{" "}
-                    <TableHead>Teléfono</TableHead>{" "}
-                    <TableHead>Correo</TableHead>{" "}
-                    <TableHead className="pr-4">Notas</TableHead>{" "}
-                  </TableRow>{" "}
-                </TableHeader>{" "}
+                    <TableHead className="pl-4">Nombre</TableHead>
+                    <TableHead>Teléfono</TableHead>
+                    <TableHead>Correo</TableHead>
+                    <TableHead className="pr-4">Notas</TableHead>
+                  </TableRow>
+                </TableHeader>
                 <TableBody>
-                  {" "}
                   {resultados.map((c) => (
                     <TableRow key={c.id}>
-                      {" "}
                       <TableCell className="pl-4 font-medium">
                         {c.nombre}
-                      </TableCell>{" "}
-                      <TableCell>{c.telefono || "-"}</TableCell>{" "}
-                      <TableCell>{c.correo || "-"}</TableCell>{" "}
+                      </TableCell>
+                      <TableCell>{c.telefono || "-"}</TableCell>
+                      <TableCell>{c.correo || "-"}</TableCell>
                       <TableCell className="pr-4 text-muted-foreground">
-                        {" "}
-                        {c.notas || "-"}{" "}
-                      </TableCell>{" "}
+                        {c.notas || "-"}
+                      </TableCell>
                     </TableRow>
-                  ))}{" "}
-                </TableBody>{" "}
+                  ))}
+                </TableBody>
               </Table>
-            )}{" "}
-          </CardContent>{" "}
-        </Card>{" "}
-      </div>{" "}
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </Pagina>
   );
 }
