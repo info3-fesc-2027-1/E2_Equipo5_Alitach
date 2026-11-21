@@ -1,0 +1,35 @@
+
+/* Animación de rebote para los avisos */
+@keyframes avisoReboteEntrada {
+  0% {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.96);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(4px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes avisoReboteSalida {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+}
+
+[data-sonner-toast][data-mounted="true"] {
+  animation: avisoReboteEntrada 0.36s cubic-bezier(0.22, 1.28, 0.36, 1) forwards;
+}
+
+[data-sonner-toast][data-removed="true"] {
+  animation: avisoReboteSalida 0.2s ease-in forwards;
+}
