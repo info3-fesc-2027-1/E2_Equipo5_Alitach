@@ -64,7 +64,8 @@ export function Kpi({ etiqueta, valor, nota, tono, onClick, activo }) {
         <Card
             onClick={onClick}
             className={cn(
-                "gap-0 py-0 shadow-none",
+                 "gap-0 border-2 border-dashed border-primary/25 py-0 shadow-none",
+                 "transition hover:-translate-y-1 hover:border-primary/60",
                 onClick && "cursor-pointer transition-colors hover:border-primary/40",
                 activo && "border-primary ring-1 ring-primary",
             )}
