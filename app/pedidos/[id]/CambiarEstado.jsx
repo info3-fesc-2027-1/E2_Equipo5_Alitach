@@ -67,65 +67,51 @@ export default function CambiarEstado({ pedido, alCambiar }) {
   if (pedido.estado === "Entregado" || pedido.estado === "Cancelado") {
     return (
       <p className="text-sm text-muted-foreground">
-        {" "}
-        Este pedido está {pedido.estado}: ya no cambia de estado.{" "}
+        Este pedido está {pedido.estado}: ya no cambia de estado.
       </p>
     );
   }
   return (
     <div className="space-y-3">
-      {" "}
       <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
-        {" "}
         <div className="grid gap-1.5">
-          {" "}
-          <Label>Nuevo estado</Label>{" "}
+          <Label>Nuevo estado</Label>
           <Select value={nuevo} onValueChange={setNuevo}>
-            {" "}
             <SelectTrigger className="w-full">
-              {" "}
-              <SelectValue placeholder="Elige el estado" />{" "}
-            </SelectTrigger>{" "}
+              <SelectValue placeholder="Elige el estado" />
+            </SelectTrigger>
             <SelectContent>
-              {" "}
-              <SelectItem value="En proceso">En proceso</SelectItem>{" "}
-              <SelectItem value="Entregado">Entregado</SelectItem>{" "}
-            </SelectContent>{" "}
-          </Select>{" "}
-        </div>{" "}
+              <SelectItem value="En proceso">En proceso</SelectItem>
+              <SelectItem value="Entregado">Entregado</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <div className="grid gap-1.5">
-          {" "}
-          <Label>¿Quién hace el cambio?</Label>{" "}
+          <Label>¿Quién hace el cambio?</Label>
           <Select value={usuarioId} onValueChange={setUsuarioId}>
-            {" "}
             <SelectTrigger className="w-full">
-              {" "}
-              <SelectValue placeholder="Elige a la persona" />{" "}
-            </SelectTrigger>{" "}
+              <SelectValue placeholder="Elige a la persona" />
+            </SelectTrigger>
             <SelectContent>
-              {" "}
               {usuarios.map((u) => (
                 <SelectItem key={u.id} value={String(u.id)}>
-                  {" "}
-                  {u.nombre}{" "}
+                  {u.nombre}
                 </SelectItem>
-              ))}{" "}
-            </SelectContent>{" "}
-          </Select>{" "}
-        </div>{" "}
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <Button type="button" onClick={cambiar} disabled={guardando}>
-          {" "}
-          {guardando ? "Guardando..." : "Cambiar estado"}{" "}
-        </Button>{" "}
-      </div>{" "}
+          {guardando ? "Guardando..." : "Cambiar estado"}
+        </Button>
+      </div>
       {SIGUIENTE[pedido.estado] && (
         <p className="flex items-center gap-1 text-xs text-muted-foreground">
-          {" "}
           Siguiente paso: {pedido.estado} <ArrowRight className="size-3" />{" "}
-          {SIGUIENTE[pedido.estado]}{" "}
+          {SIGUIENTE[pedido.estado]}
         </p>
-      )}{" "}
-      <ListaErrores errores={errores} />{" "}
+      )}
+      <ListaErrores errores={errores} />
     </div>
   );
 }

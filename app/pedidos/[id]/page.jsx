@@ -182,111 +182,87 @@ export default function DetallePedido() {
             <CardTitle>Fechas</CardTitle>
           </CardHeader>
           <CardContent>
-            {" "}
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-              {" "}
-              <dt className="text-muted-foreground">Creado</dt>{" "}
+              <dt className="text-muted-foreground">Creado</dt>
               <dd className="text-right">
                 {fechaCorta(pedido.fecha_creacion)}
-              </dd>{" "}
-              <dt className="text-muted-foreground">Compromiso</dt>{" "}
+              </dd>
+              <dt className="text-muted-foreground">Compromiso</dt>
               <dd
                 className={cn(
                   "text-right font-medium",
                   esAtrasado(pedido) && "text-red-600",
                 )}
               >
-                {" "}
-                {fechaCorta(pedido.fecha_compromiso)}{" "}
-              </dd>{" "}
+                {fechaCorta(pedido.fecha_compromiso)}
+              </dd>
               {cambioFecha && (
                 <>
-                  {" "}
-                  <dt className="text-muted-foreground">Original</dt>{" "}
+                  <dt className="text-muted-foreground">Original</dt>
                   <dd className="text-right text-muted-foreground line-through">
-                    {" "}
-                    {fechaCorta(pedido.fecha_compromiso_original)}{" "}
-                  </dd>{" "}
+                    {fechaCorta(pedido.fecha_compromiso_original)}
+                  </dd>
                 </>
-              )}{" "}
-            </dl>{" "}
-          </CardContent>{" "}
-        </Card>{" "}
+              )}
+            </dl>
+          </CardContent>
+        </Card>
         <Card>
-          {" "}
           <CardHeader>
-            {" "}
-            <CardTitle>Montos</CardTitle>{" "}
-          </CardHeader>{" "}
+            <CardTitle>Montos</CardTitle>
+          </CardHeader>
           <CardContent>
-            {" "}
             <dl className="space-y-2 text-sm">
-              {" "}
               <div className="flex justify-between">
-                {" "}
-                <dt className="text-muted-foreground">Prendas</dt>{" "}
-                <dd>{prendas.length}</dd>{" "}
-              </div>{" "}
+                <dt className="text-muted-foreground">Prendas</dt>
+                <dd>{prendas.length}</dd>
+              </div>
               <div className="flex justify-between">
-                {" "}
-                <dt className="text-muted-foreground">Piezas</dt>{" "}
-                <dd>{piezas}</dd>{" "}
-              </div>{" "}
+                <dt className="text-muted-foreground">Piezas</dt>
+                <dd>{piezas}</dd>
+              </div>
               <div className="flex items-baseline justify-between border-t pt-2">
-                {" "}
-                <dt className="font-medium">Total</dt>{" "}
+                <dt className="font-medium">Total</dt>
                 <dd className="text-base font-semibold">
                   {dinero(total)}
-                </dd>{" "}
-              </div>{" "}
-            </dl>{" "}
-          </CardContent>{" "}
-        </Card>{" "}
-      </div>{" "}
+                </dd>
+              </div>
+            </dl>
+          </CardContent>
+        </Card>
+      </div>
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        {" "}
         <div className="min-w-0 space-y-4">
-          {" "}
-          {/* Prendas */}{" "}
+          {/* Prendas */}
           <Card>
-            {" "}
             <CardHeader>
-              {" "}
-              <CardTitle>Prendas</CardTitle>{" "}
-            </CardHeader>{" "}
+              <CardTitle>Prendas</CardTitle>
+            </CardHeader>
             <CardContent>
-              {" "}
               <Table>
-                {" "}
                 <TableHeader>
-                  {" "}
                   <TableRow>
-                    {" "}
-                    <TableHead>Producto</TableHead>{" "}
-                    <TableHead>Personalización</TableHead>{" "}
-                    <TableHead>Talla</TableHead> <TableHead>Color</TableHead>{" "}
-                    <TableHead className="text-right">Piezas</TableHead>{" "}
-                    <TableHead className="text-right">Precio c/u</TableHead>{" "}
-                    <TableHead className="text-right">Subtotal</TableHead>{" "}
-                  </TableRow>{" "}
-                </TableHeader>{" "}
+                    <TableHead>Producto</TableHead>
+                    <TableHead>Personalización</TableHead>
+                    <TableHead>Talla</TableHead>
+                    <TableHead>Color</TableHead>
+                    <TableHead className="text-right">Piezas</TableHead>
+                    <TableHead className="text-right">Precio c/u</TableHead>
+                    <TableHead className="text-right">Subtotal</TableHead>
+                  </TableRow>
+                </TableHeader>
                 <TableBody>
-                  {" "}
                   {prendas.map((p) => (
                     <TableRow key={p.id}>
-                      {" "}
                       <TableCell>
-                        {" "}
                         <p className="font-medium">
                           {p.producto?.tipo_prenda}
-                        </p>{" "}
+                        </p>
                         <p className="text-xs text-muted-foreground">
-                          {" "}
-                          {p.producto?.modelo}{" "}
-                        </p>{" "}
-                      </TableCell>{" "}
+                          {p.producto?.modelo}
+                        </p>
+                      </TableCell>
                       <TableCell>
-                        {" "}
                         {p.opcion_personalizacion ? (
                           p.opcion_personalizacion.tipo +
                           ": " +
@@ -295,76 +271,62 @@ export default function DetallePedido() {
                           <span className="text-muted-foreground">
                             Sin personalización
                           </span>
-                        )}{" "}
-                      </TableCell>{" "}
-                      <TableCell>{p.talla || "-"}</TableCell>{" "}
-                      <TableCell>{p.color || "-"}</TableCell>{" "}
+                        )}
+                      </TableCell>
+                      <TableCell>{p.talla || "-"}</TableCell>
+                      <TableCell>{p.color || "-"}</TableCell>
                       <TableCell className="text-right tabular-nums">
                         {p.piezas}
-                      </TableCell>{" "}
+                      </TableCell>
                       <TableCell className="text-right tabular-nums">
-                        {" "}
-                        {dinero(p.precio_unitario)}{" "}
-                      </TableCell>{" "}
+                        {dinero(p.precio_unitario)}
+                      </TableCell>
                       <TableCell className="text-right tabular-nums">
-                        {" "}
-                        {dinero(p.piezas * p.precio_unitario)}{" "}
-                      </TableCell>{" "}
+                        {dinero(p.piezas * p.precio_unitario)}
+                      </TableCell>
                     </TableRow>
-                  ))}{" "}
-                </TableBody>{" "}
+                  ))}
+                </TableBody>
                 <TableFooter>
-                  {" "}
                   <TableRow>
-                    {" "}
                     <TableCell colSpan={6} className="text-right">
-                      {" "}
-                      Total{" "}
-                    </TableCell>{" "}
+                      Total
+                    </TableCell>
                     <TableCell className="text-right tabular-nums">
-                      {" "}
-                      {dinero(total)}{" "}
-                    </TableCell>{" "}
-                  </TableRow>{" "}
-                </TableFooter>{" "}
-              </Table>{" "}
-            </CardContent>{" "}
-          </Card>{" "}
-          {/* Estado del pedido */}{" "}
+                      {dinero(total)}
+                    </TableCell>
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </CardContent>
+          </Card>
+          {/* Estado del pedido */}
           <Card>
-            {" "}
             <CardHeader>
-              {" "}
-              <CardTitle>Estado del pedido</CardTitle>{" "}
-            </CardHeader>{" "}
+              <CardTitle>Estado del pedido</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-6">
-              {" "}
               {pedido.estado === "Cancelado" ? (
                 <div
                   className={`flex gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm`}
                 >
-                  {" "}
-                  <XCircle className="size-5 shrink-0 text-red-600" />{" "}
+                  <XCircle className="size-5 shrink-0 text-red-600" />
                   <div>
-                    {" "}
                     <p className="font-medium text-red-800">
                       Pedido cancelado
-                    </p>{" "}
+                    </p>
                     <p className="text-red-700">
-                      {" "}
-                      Motivo: {pedido.motivo_cancelacion || "-"}{" "}
-                    </p>{" "}
-                  </div>{" "}
+                      Motivo: {pedido.motivo_cancelacion || "-"}
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <ol className="flex">
-                  {" "}
                   {PASOS.map((paso, i) => {
                     const hecho = i <= pasoActual;
                     const fecha = fechaDePaso(paso);
                     return (
                       <li key={paso} className="relative flex-1">
-                        {" "}
                         {i > 0 && (
                           <span
                             className={cn(
@@ -372,9 +334,8 @@ export default function DetallePedido() {
                               hecho ? "bg-green-600" : "bg-border",
                             )}
                           />
-                        )}{" "}
+                        )}
                         <div className="relative flex flex-col items-center text-center">
-                          {" "}
                           <span
                             className={cn(
                               `flex size-6 items-center justify-center rounded-full border-2 bg-card`,
@@ -383,89 +344,74 @@ export default function DetallePedido() {
                                 : "border-border",
                             )}
                           >
-                            {" "}
-                            {hecho && <Check className="size-3.5" />}{" "}
-                          </span>{" "}
+                            {hecho && <Check className="size-3.5" />}
+                          </span>
                           <span
                             className={cn(
                               "mt-2 text-sm",
                               hecho ? "font-medium" : "text-muted-foreground",
                             )}
                           >
-                            {" "}
-                            {paso}{" "}
-                          </span>{" "}
+                            {paso}
+                          </span>
                           {hecho && fecha && (
                             <span className="text-xs text-muted-foreground">
-                              {" "}
-                              {fechaCorta(fecha)}{" "}
+                              {fechaCorta(fecha)}
                             </span>
-                          )}{" "}
-                        </div>{" "}
+                          )}
+                        </div>
                       </li>
                     );
-                  })}{" "}
+                  })}
                 </ol>
-              )}{" "}
-              <CambiarEstado pedido={pedido} alCambiar={cargar} />{" "}
-            </CardContent>{" "}
-          </Card>{" "}
-        </div>{" "}
+              )}
+              <CambiarEstado pedido={pedido} alCambiar={cargar} />
+            </CardContent>
+          </Card>
+        </div>
         <div className="space-y-4">
-          {" "}
           <Card>
-            {" "}
             <CardHeader>
-              {" "}
-              <CardTitle>Cambiar fecha compromiso</CardTitle>{" "}
+              <CardTitle>Cambiar fecha compromiso</CardTitle>
               <CardDescription>
                 La fecha original se conserva.
-              </CardDescription>{" "}
-            </CardHeader>{" "}
+              </CardDescription>
+            </CardHeader>
             <CardContent>
-              {" "}
-              <CambiarFecha pedido={pedido} alCambiar={cargar} />{" "}
-            </CardContent>{" "}
-          </Card>{" "}
+              <CambiarFecha pedido={pedido} alCambiar={cargar} />
+            </CardContent>
+          </Card>
           <Card>
-            {" "}
             <CardHeader>
-              {" "}
-              <CardTitle>Historial</CardTitle>{" "}
-            </CardHeader>{" "}
+              <CardTitle>Historial</CardTitle>
+            </CardHeader>
             <CardContent>
-              {" "}
               {historial.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  {" "}
-                  Todavía no hay cambios de estado.{" "}
+                  Todavía no hay cambios de estado.
                 </p>
               ) : (
                 <ol className="space-y-4 border-l pl-4">
-                  {" "}
                   {historial.map((c) => (
                     <li key={c.id} className="relative text-sm">
-                      {" "}
                       <span
                         className={`absolute top-1.5 -left-[21px] size-2.5 rounded-full bg-primary`}
-                      />{" "}
+                      />
                       <p className="font-medium">
-                        {" "}
-                        {c.estado_anterior} → {c.estado_nuevo}{" "}
-                      </p>{" "}
+                        {c.estado_anterior} → {c.estado_nuevo}
+                      </p>
                       <p className="text-xs text-muted-foreground">
-                        {" "}
                         {fechaHora(c.fecha_hora)} · por{" "}
-                        {c.usuario?.nombre || "?"}{" "}
-                      </p>{" "}
+                        {c.usuario?.nombre || "?"}
+                      </p>
                     </li>
-                  ))}{" "}
+                  ))}
                 </ol>
-              )}{" "}
-            </CardContent>{" "}
-          </Card>{" "}
-        </div>{" "}
-      </div>{" "}
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </Pagina>
   );
 }
