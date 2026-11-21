@@ -25,6 +25,7 @@ import {
   dinero,
   fechaCorta,
 } from "@/components/comunes";
+import { CorteTijeras } from "@/components/alitachs/corte-tijeras";
 
 // Lista corta de pedidos para las tarjetas del panel
 function ListaCorta({ pedidos, vacio, rojo }) {
@@ -116,7 +117,7 @@ export default function Panel() {
         </div>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <CorteTijeras titulo="Pedidos por atender" className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Atrasados</CardTitle>
@@ -152,7 +153,7 @@ export default function Panel() {
             />
           </CardContent>
         </Card>
-      </div>
+       </CorteTijeras>
     </Pagina>
   );
 }

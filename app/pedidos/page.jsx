@@ -36,6 +36,7 @@ import {
   dinero,
   fechaCorta,
 } from "@/components/comunes";
+import { CorteTijeras } from "@/components/alitachs/corte-tijeras";
 import { cn } from "@/lib/utils";
 
 const ESTADOS = ["Pendiente", "En proceso", "Entregado", "Cancelado"];
@@ -96,6 +97,7 @@ export default function Pedidos() {
         ))}
       </div>
 
+      <CorteTijeras titulo="Lista de pedidos">
       <Card className="gap-0 py-0">
         <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center">
           <div className="relative flex-1 sm:max-w-sm">
@@ -203,6 +205,7 @@ export default function Pedidos() {
           )}
         </CardContent>
       </Card>
-    </Pagina>
+    </CorteTijeras>
+ </Pagina>
   );
 }
