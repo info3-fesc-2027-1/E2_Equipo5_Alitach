@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Portada } from "@/components/alitachs/portada";
 import {
   EncabezadoPagina,
   EstadoBadge,
@@ -80,6 +81,7 @@ export default function Panel() {
 
   return (
     <Pagina>
+        <Portada />
       <EncabezadoPagina titulo="Panel" descripcion="Resumen de los pedidos del taller.">
         <Button asChild variant="outline">
           <Link href="/pedidos">
