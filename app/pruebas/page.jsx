@@ -220,6 +220,14 @@ export default function Pruebas() {
       "En proceso con fecha pasada (true)",
       esAtrasado({ estado: "En proceso", fecha_compromiso: "2020-01-01" }),
     ],
+        [
+      "Fecha fija: vence ese mismo día (false)",
+      esAtrasado({ estado: "Pendiente", fecha_compromiso: "2026-11-23" }, "2026-11-23"),
+    ],
+    [
+      "Fecha fija: venció un día antes (true)",
+      esAtrasado({ estado: "En proceso", fecha_compromiso: "2026-11-22" }, "2026-11-23"),
+    ],
     [
       "Cambiar a fecha pasada (false)",
       puedeModificarFecha(
