@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
         <TooltipProvider>
           <SidebarProvider>
             <AppSidebar />
-            <SidebarInset className="bg-background">
+            <SidebarInset className="min-w-0 bg-background">
               <BarraSuperior />
               {children}
             </SidebarInset>
