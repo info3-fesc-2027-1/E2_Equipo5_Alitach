@@ -1,4 +1,5 @@
-"use client"
+
+"use client";
 
 import {
   CircleCheckIcon,
@@ -6,20 +7,20 @@ import {
   Loader2Icon,
   OctagonXIcon,
   TriangleAlertIcon,
-} from "lucide-react"
-import { useTheme } from "next-themes"
+} from "lucide-react";
+import { useTheme } from "next-themes";
 import { Toaster as Sonner } from "sonner";
-import "@/app/avisos.css";
+import "@/components/alitachs/avisos.css";
 
 const Toaster = ({
   ...props
 }) => {
-  const { theme = "system" } = useTheme()
+  const { theme = "system" } = useTheme();
 
   return (
     <Sonner
       theme={theme}
-      className="toaster group"
+      className="toaster group avisos-alitachs"
       icons={{
         success: <CircleCheckIcon className="size-4" />,
         info: <InfoIcon className="size-4" />,
@@ -38,6 +39,6 @@ const Toaster = ({
       {...props}
     />
   );
-}
+};
 
-export { Toaster }
+export { Toaster };
