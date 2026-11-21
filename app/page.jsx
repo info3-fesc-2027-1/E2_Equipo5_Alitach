@@ -74,7 +74,7 @@ export default function Panel() {
   const activos = pedidos.filter(
     (p) => p.estado === "Pendiente" || p.estado === "En proceso",
   );
-  const atrasados = ordenarPedidos(pedidos.filter(esAtrasado));
+  const atrasados = ordenarPedidos(pedidos.filter((p) => esAtrasado(p)));
   const proximos = ordenarPedidos(activos.filter((p) => !esAtrasado(p)));
   const montoActivo = activos.reduce((s, p) => s + calcularTotal(p.prenda_pedido || []), 0);
 
