@@ -5,7 +5,6 @@ import { obtenerPedidos } from "../../lib/datos";
 import { ordenarPedidos, esAtrasado } from "../../lib/logica";
 
 const ESTADOS = ["Pendiente", "En proceso", "Entregado", "Cancelado"];
-
 export default function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
   const [estado, setEstado] = useState("");
