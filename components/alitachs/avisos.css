@@ -1,0 +1,109 @@
+/* Estilos personalizados para avisos (Sonner) de Alitachs */
+
+/* Animación de entrada con rebote desde arriba */
+@keyframes alitach-rebote-entrada {
+  0% {
+    opacity: 0;
+    transform: translateY(-28px) scale(0.95);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(6px) scale(1.01);
+  }
+  80% {
+    transform: translateY(-3px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Animación de giro suave para el ícono de éxito */
+@keyframes alitach-giro-palomita {
+  0% {
+    transform: rotate(-180deg) scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: rotate(15deg) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Contenedor principal de cada aviso con la clase avisos-alitachs */
+.avisos-alitachs [data-sonner-toast] {
+  background-color: #152238 !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-left: 4px solid #f472b6 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 12px 28px -6px rgba(10, 18, 34, 0.45) !important;
+  font-family: var(--font-inter), system-ui, sans-serif !important;
+  padding: 0.875rem 1rem !important;
+}
+
+.avisos-alitachs [data-sonner-toast][data-mounted="true"] {
+  animation: alitach-rebote-entrada 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Variantes por tipo de aviso */
+.avisos-alitachs [data-sonner-toast][data-type="success"] {
+  border-left-color: #22c55e !important;
+}
+
+.avisos-alitachs [data-sonner-toast][data-type="success"] [data-icon] svg {
+  color: #22c55e !important;
+  animation: alitach-giro-palomita 0.5s ease-out forwards;
+}
+
+.avisos-alitachs [data-sonner-toast][data-type="error"] {
+  border-left-color: #ef4444 !important;
+}
+
+.avisos-alitachs [data-sonner-toast][data-type="error"] [data-icon] svg {
+  color: #ef4444 !important;
+}
+
+.avisos-alitachs [data-sonner-toast][data-type="warning"] {
+  border-left-color: #f59e0b !important;
+}
+
+.avisos-alitachs [data-sonner-toast][data-type="warning"] [data-icon] svg {
+  color: #f59e0b !important;
+}
+
+.avisos-alitachs [data-sonner-toast][data-type="info"] {
+  border-left-color: #38bdf8 !important;
+}
+
+.avisos-alitachs [data-sonner-toast][data-type="info"] [data-icon] svg {
+  color: #38bdf8 !important;
+}
+
+/* Título y descripción dentro del aviso */
+.avisos-alitachs [data-sonner-toast] [data-title] {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+}
+
+.avisos-alitachs [data-sonner-toast] [data-description] {
+  color: #cbd5e1 !important;
+  font-size: 0.8125rem !important;
+}
+
+/* Botón de cerrar */
+.avisos-alitachs [data-sonner-toast] [data-close-button] {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+
+.avisos-alitachs [data-sonner-toast] [data-close-button]:hover {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+}
