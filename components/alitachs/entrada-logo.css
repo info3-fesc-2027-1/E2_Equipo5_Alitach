@@ -1,0 +1,109 @@
+/* Animaciones de la entrada del logo. Tailwind solo trae animaciones sencillas,
+   entoncs acá que el dibujo del sello se escribe aquí con @keyframes. */
+
+.e-sello {
+    transition: transform 1s cubic-bezier(0.65, 0, 0.25, 1);
+}
+
+/* Círculo de fondo: aparece al salir para que el logo se vea sobre la portada */
+.e-fondo {
+    fill: #f0f0f0;
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.e-circulo {
+    fill: none;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+}
+
+.e-c1 {
+    stroke: #3a5f9a;
+    stroke-width: 3;
+    animation: e-dibujar 1.3s cubic-bezier(0.6, 0, 0.3, 1) 0.3s forwards;
+}
+
+.e-c2 {
+    stroke: #0e1f45;
+    stroke-width: 2.4;
+    animation: e-dibujar 1.3s cubic-bezier(0.6, 0, 0.3, 1) 0.55s forwards;
+}
+
+.e-letra {
+    opacity: 0;
+    animation: e-mostrar 0.35s ease forwards;
+}
+
+.e-monograma {
+    opacity: 0;
+    transform: translateY(24px);
+    animation: e-subir 1s cubic-bezier(0.2, 0.8, 0.2, 1) 1.9s forwards;
+}
+
+.e-aguja {
+    opacity: 0;
+    transform: translate(-150px, -350px);
+    animation: e-clavar 0.9s cubic-bezier(0.7, 0, 0.2, 1.15) 2.5s forwards;
+}
+
+.e-hilo {
+    fill: none;
+    stroke: #7dd957;
+    stroke-width: 7;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: e-dibujar 2s cubic-bezier(0.45, 0, 0.25, 1) 3.25s forwards;
+}
+
+.e-hilo-ojo {
+    fill: none;
+    stroke: #7dd957;
+    stroke-width: 7;
+    stroke-linecap: round;
+    opacity: 0;
+    animation: e-mostrar 0.2s ease 3.4s forwards;
+}
+
+@keyframes e-dibujar {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes e-mostrar {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes e-subir {
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes e-clavar {
+    0% {
+        opacity: 0;
+        transform: translate(-150px, -350px);
+    }
+
+    25% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #entrada-logo * {
+        animation-duration: 0.01s !important;
+        animation-delay: 0s !important;
+    }
+}
