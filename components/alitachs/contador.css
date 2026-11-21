@@ -1,0 +1,9 @@
+/* El número nuevo entra desde abajo (si subió) o desde arriba (si bajó) */ 
+.contador-numero.sube { animation: contador-sube 0.25s ease-out; } 
+.contador-numero.baja { animation: contador-baja 0.25s ease-out; } 
+/* Quita las flechitas que el navegador pone en los campos de número */ 
+.contador-numero::-webkit-inner-spin-button, 
+.contador-numero::-webkit-outer-spin-button { appearance: none; margin: 0; } 
+.contador-numero { -moz-appearance: textfield; } 
+@keyframes contador-sube { from { opacity: 0; transform: translateY(8px); } } 
+@keyframes contador-baja { from { opacity: 0; transform: translateY(-8px); } }
