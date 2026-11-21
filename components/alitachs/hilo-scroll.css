@@ -1,0 +1,44 @@
+/* Estilo del hilo que baja con el scroll. Son trazos de SVG, por eso van aquí. */
+.hilo-mascara {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 12;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.hilo-capa {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.hilo-capa.sombra {
+  stroke: rgb(11 23 51 / 0.18);
+  stroke-width: 4;
+  transform: translate(3px, 4px);
+}
+
+.hilo-capa.base {
+  stroke: #79c858;
+  stroke-width: 3.6;
+}
+
+/* Rayitas oscuras y claras que imitan el hilo torcido */
+.hilo-capa.torsion {
+  stroke: #4f9a33;
+  stroke-width: 3.6;
+  stroke-dasharray: 1.6 2.4;
+}
+
+.hilo-capa.brillo {
+  stroke: #c9f0b4;
+  stroke-width: 1;
+  stroke-dasharray: 1.2 2.8;
+  stroke-dashoffset: 0.6;
+  opacity: 0.9;
+}
+
+.aguja-scroll {
+  transform-origin: 6px 5px;
+  filter: drop-shadow(2px 3px 2px rgb(11 23 51 / 0.3));
+}
