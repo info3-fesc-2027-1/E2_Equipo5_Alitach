@@ -138,7 +138,8 @@ export default function NuevoPedido() {
       setFechaCompromiso("");      
       setPrendas([{ ...PRENDA_VACIA }]);    
     } catch (error) {      
-      setErrores(["Error al guardar: " + error.message]);    
+      setErrores(["Error al guardar: " + error.message]);
+      envio.fallo();    
     } finally {      
       setGuardando(false);    
     }  
