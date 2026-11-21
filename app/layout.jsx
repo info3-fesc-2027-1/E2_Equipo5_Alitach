@@ -2,6 +2,7 @@
 
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { HiloScroll } from "@/components/alitachs/hilo-scroll";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es" className={inter.variable}>
       <body>
+         <HiloScroll />
         <TooltipProvider>
           <SidebarProvider>
             <AppSidebar />
