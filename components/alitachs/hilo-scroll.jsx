@@ -53,6 +53,7 @@ export function HiloScroll() {
     const capas = svg.querySelectorAll(".hilo-capa");
 
     function mover() {
+      if (!svg.clientHeight) return;
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const avance = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
       revela.current.style.strokeDashoffset = 1 - avance;
@@ -73,6 +74,7 @@ export function HiloScroll() {
     function dibujar() {
       const ancho = svg.clientWidth;
       const alto = svg.clientHeight;
+      if (!ancho || !alto) return;
       const d = trazarHilo(ancho, alto);
       svg.setAttribute("viewBox", `0 0 ${ancho} ${alto}`);
       revela.current.setAttribute("d", d);
