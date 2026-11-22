@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Search } from "lucide-react";
 import { validarCliente } from "../../lib/logica";
-import { guardarCliente, buscarClientes } from "../../lib/datos";
+import { guardarCliente, buscarClientes, existeCliente } from "../../lib/datos";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -68,7 +68,12 @@ export default function Clientes() {
     }
     setGuardando(true);
     try {
-      await guardarCliente(cliente);
+      if (await existeCliente(cliente.nombre)) {
+        setErrores(["Ya existe un cliente con ese nombre"]);
+        envio.fallo();
+        return;
+      }
+      await guardarCliente({ ...cliente, nombre: cliente.nombre.trim() });
       envio.exito();
       toast.success("Cliente guardado.");
       setTotal((n) => (n ?? 0) + 1);
