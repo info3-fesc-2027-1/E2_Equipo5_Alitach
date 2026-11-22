@@ -3,36 +3,46 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Tema de Alitach: contenido gris claro, tarjetas blancas, primario azul */
+/* Tema de Alitach «cuaderno de diseñador»: papel claro, tinta marino, azul y verde del logo */
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.975 0.002 260);
-  --foreground: oklch(0.21 0.02 265);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.02 265);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.02 265);
-  --primary: oklch(0.47 0.17 262);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.955 0.006 260);
-  --secondary-foreground: oklch(0.25 0.02 265);
-  --muted: oklch(0.955 0.006 260);
-  --muted-foreground: oklch(0.5 0.02 260);
-  --accent: oklch(0.95 0.02 262);
-  --accent-foreground: oklch(0.35 0.12 262);
-  --destructive: oklch(0.55 0.2 27);
-  --border: oklch(0.91 0.006 260);
-  --input: oklch(0.88 0.008 260);
-  --ring: oklch(0.6 0.15 262);
+  --background: #fbfaf5;
+  --foreground: #0b1733;
+  --card: #fffefb;
+  --card-foreground: #0b1733;
+  --popover: #fffefb;
+  --popover-foreground: #0b1733;
+  --primary: #0b1733;
+  --primary-foreground: #ffffff;
+  --secondary: #f1efe8;
+  --secondary-foreground: #0b1733;
+  --muted: #f1efe8;
+  --muted-foreground: #5f6678;
+  --accent: #e9f7e1;
+  --accent-foreground: #0b1733;
+  --destructive: #d6332a;
+  --border: #e2dfd5;
+  --input: #d9d5c9;
+  --ring: #7dd957;
 
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.3 0.02 265);
-  --sidebar-primary: oklch(0.47 0.17 262);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.955 0.006 260);
-  --sidebar-accent-foreground: oklch(0.47 0.17 262);
-  --sidebar-border: oklch(0.91 0.006 260);
-  --sidebar-ring: oklch(0.6 0.15 262);
+  --sidebar: #0b1733;
+  --sidebar-foreground: #cfd6e6;
+  --sidebar-primary: #7dd957;
+  --sidebar-primary-foreground: #0b1733;
+  --sidebar-accent: rgb(125 217 87 / 0.15);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 0.12);
+  --sidebar-ring: #7dd957;
+
+  /* Colores con nombre para el estilo cuaderno */
+  --marino: #0b1733;
+  --tinta: #3a5f9a;
+  --verde: #7dd957;
+  --papel: #fbfaf5;
+
+  /* Letras: títulos en Playfair Display (la del «AL» del logo) y notas a mano en Caveat */
+  --font-titulo: var(--font-playfair), Georgia, serif;
+  --font-mano: var(--font-caveat), cursive;
 }
 
 .dark {
@@ -66,6 +76,7 @@
 
 @theme inline {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
