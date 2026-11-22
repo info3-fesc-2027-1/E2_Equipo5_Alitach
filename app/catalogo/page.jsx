@@ -37,7 +37,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EncabezadoPagina, ListaErrores, Pagina, dinero } from "@/components/comunes";
+import {
+  EncabezadoPagina,
+  Kpi,
+  ListaErrores,
+  Pagina,
+  Seccion,
+  dinero,
+} from "@/components/comunes";
 import Galeria from "@/components/galeria";
 import { BotonGuardar } from "@/components/alitachs/boton-guardar";
 import { Sacudir } from "@/components/alitachs/sacudir";
@@ -65,7 +72,6 @@ export default function Catalogo() {
   const [opciones, setOpciones] = useState([]);
   const [guardando, setGuardando] = useState(false);
   const [guardandoOpcion, setGuardandoOpcion] = useState(false);
-
   const envioProducto = useEnvio();
   const envioOpcion = useEnvio();
 
@@ -105,23 +111,18 @@ export default function Catalogo() {
   // Revisa el producto y, si es válido, lo guarda en Supabase
   async function registrar(e) {
     e.preventDefault();
-
     const resultado = validarProducto(producto);
     setErroresProducto(resultado.errores);
-
     if (!resultado.valido) {
       envioProducto.fallo();
       return;
     }
-
     setGuardando(true);
-
     try {
       await guardarProducto({
         ...producto,
         precio: Number(producto.precio),
       });
-
       envioProducto.exito();
       toast.success("Producto guardado.");
       setProducto(PRODUCTO_VACIO);
@@ -137,23 +138,18 @@ export default function Catalogo() {
   // Guarda una opción de personalización (bordado o serigrafía)
   async function registrarOpcion(e) {
     e.preventDefault();
-
     const resultado = validarOpcion(opcion);
     setErroresOpcion(resultado.errores);
-
     if (!resultado.valido) {
       envioOpcion.fallo();
       return;
     }
-
     setGuardandoOpcion(true);
-
     try {
       await guardarOpcion({
         ...opcion,
         precio: Number(opcion.precio),
       });
-
       envioOpcion.exito();
       toast.success("Opción guardada.");
       setOpcion(OPCION_VACIA);
@@ -169,65 +165,47 @@ export default function Catalogo() {
   return (
     <Pagina>
       <EncabezadoPagina
+        etiqueta="Catálogo"
         titulo="Productos"
-        descripcion="Aquí el personal registra y consulta las prendas para cotizar."
+        descripcion={
+          productos.length +
+          (productos.length === 1 ? " prenda · " : " prendas · ") +
+          opciones.length +
+          (opciones.length === 1
+            ? " opción de personalización"
+            : " opciones de personalización")
+        }
       />
 
-      {/* Productos */}
-      <div className="grid gap-4 lg:grid-cols-[1fr_340px] lg:items-start">
-        <Card className="min-w-0">
-          <CardHeader>
-            <CardTitle>Productos registrados</CardTitle>
-            <CardDescription>
-              {productos.length} productos en el catálogo
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            {productos.length === 0 ? (
-              <p className="py-6 text-center text-sm text-muted-foreground">
-                Todavía no hay productos.
-              </p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Tipo de prenda</TableHead>
-                    <TableHead>Modelo</TableHead>
-                    <TableHead>Colores</TableHead>
-                    <TableHead className="text-right">Precio</TableHead>
-                  </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                  {productos.map((p) => (
-                    <TableRow key={p.id}>
-                      <TableCell className="font-medium">
-                        {p.tipo_prenda}
-                      </TableCell>
-                      <TableCell>{p.modelo}</TableCell>
-                      <TableCell>{p.colores || "-"}</TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {dinero(p.precio)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
-
+      {/* Productos: cada prenda es una etiqueta de precio colgante */}
+      <Seccion numero={1}>Prendas y precios</Seccion>
+      <div className="grid gap-9 lg:grid-cols-[1fr_340px] lg:items-start">
+        <div className="min-w-0">
+          {productos.length === 0 ? (
+            <p className="texto-mano py-6 text-center">
+              Todavía no hay productos.
+            </p>
+          ) : (
+            <div className="etiquetas-precio">
+              {productos.map((p) => (
+                <Kpi
+                  key={p.id}
+                  etiqueta={p.tipo_prenda}
+                  valor={dinero(p.precio)}
+                  nota={p.modelo + (p.colores ? " · " + p.colores : "")}
+                />
+              ))}
+            </div>
+          )}
+        </div>
         <Card>
           <CardHeader>
             <CardTitle>Registrar producto</CardTitle>
           </CardHeader>
-
           <CardContent>
             <form onSubmit={registrar} className="space-y-4">
               <div className="grid gap-1.5">
                 <Label htmlFor="tipo_prenda">Tipo de prenda</Label>
-
                 <Sacudir
                   veces={
                     falla(erroresProducto, "prenda")
@@ -245,7 +223,6 @@ export default function Catalogo() {
                   />
                 </Sacudir>
               </div>
-
               <div className="grid gap-1.5">
                 <Label htmlFor="modelo">Modelo</Label>
                 <Input
@@ -256,7 +233,6 @@ export default function Catalogo() {
                   placeholder="Ej. Reflejante"
                 />
               </div>
-
               <div className="grid gap-1.5">
                 <Label htmlFor="colores">Colores</Label>
                 <Input
@@ -267,10 +243,8 @@ export default function Catalogo() {
                   placeholder="Ej. Naranja, Amarillo"
                 />
               </div>
-
               <div className="grid gap-1.5">
                 <Label htmlFor="precio">Precio (MXN)</Label>
-
                 <Sacudir
                   veces={
                     falla(erroresProducto, "precio")
@@ -289,7 +263,6 @@ export default function Catalogo() {
                   />
                 </Sacudir>
               </div>
-
               <BotonGuardar
                 guardando={guardando}
                 listo={envioProducto.listo}
@@ -297,7 +270,6 @@ export default function Catalogo() {
               >
                 Registrar producto
               </BotonGuardar>
-
               <Sacudir veces={envioProducto.intentos}>
                 <ListaErrores errores={erroresProducto} />
               </Sacudir>
@@ -307,22 +279,22 @@ export default function Catalogo() {
       </div>
 
       {/* Opciones de personalización */}
-      <div className="grid gap-4 lg:grid-cols-[1fr_340px] lg:items-start">
+      <Seccion numero={2}>Opciones de personalización</Seccion>
+      <div className="grid gap-9 lg:grid-cols-[1fr_340px] lg:items-start">
         <Card className="min-w-0">
           <CardHeader>
-            <CardTitle>Opciones de personalización</CardTitle>
+            <CardTitle>Bordado y serigrafía</CardTitle>
             <CardDescription>
               Bordados y serigrafías que se suman al precio de la prenda.
             </CardDescription>
           </CardHeader>
-
           <CardContent>
             {opciones.length === 0 ? (
-              <p className="py-6 text-center text-sm text-muted-foreground">
+              <p className="texto-mano py-6 text-center">
                 Todavía no hay opciones.
               </p>
             ) : (
-              <Table>
+              <Table className="tabla-movil">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Tipo</TableHead>
@@ -330,15 +302,17 @@ export default function Catalogo() {
                     <TableHead className="text-right">Precio</TableHead>
                   </TableRow>
                 </TableHeader>
-
                 <TableBody>
                   {opciones.map((o) => (
                     <TableRow key={o.id}>
-                      <TableCell>
+                      <TableCell data-et="Tipo">
                         <Badge variant="secondary">{o.tipo}</Badge>
                       </TableCell>
-                      <TableCell>{o.descripcion}</TableCell>
-                      <TableCell className="text-right tabular-nums">
+                      <TableCell data-et="Descripción">{o.descripcion}</TableCell>
+                      <TableCell
+                        data-et="Precio"
+                        className="text-right tabular-nums"
+                      >
                         {dinero(o.precio)}
                       </TableCell>
                     </TableRow>
@@ -348,17 +322,14 @@ export default function Catalogo() {
             )}
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader>
             <CardTitle>Agregar opción</CardTitle>
           </CardHeader>
-
           <CardContent>
             <form onSubmit={registrarOpcion} className="space-y-4">
               <div className="grid gap-1.5">
                 <Label>Tipo</Label>
-
                 <Select
                   value={opcion.tipo}
                   onValueChange={(v) =>
@@ -368,17 +339,14 @@ export default function Catalogo() {
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
-
                   <SelectContent>
                     <SelectItem value="Bordado">Bordado</SelectItem>
                     <SelectItem value="Serigrafía">Serigrafía</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-
               <div className="grid gap-1.5">
                 <Label htmlFor="descripcion">Descripción</Label>
-
                 <Sacudir
                   veces={
                     falla(erroresOpcion, "descripción")
@@ -400,10 +368,8 @@ export default function Catalogo() {
                   />
                 </Sacudir>
               </div>
-
               <div className="grid gap-1.5">
                 <Label htmlFor="precio-opcion">Precio (MXN)</Label>
-
                 <Sacudir
                   veces={
                     falla(erroresOpcion, "precio")
@@ -426,7 +392,6 @@ export default function Catalogo() {
                   />
                 </Sacudir>
               </div>
-
               <BotonGuardar
                 guardando={guardandoOpcion}
                 listo={envioOpcion.listo}
@@ -435,7 +400,6 @@ export default function Catalogo() {
               >
                 Agregar opción
               </BotonGuardar>
-
               <Sacudir veces={envioOpcion.intentos}>
                 <ListaErrores errores={erroresOpcion} />
               </Sacudir>
@@ -444,6 +408,7 @@ export default function Catalogo() {
         </Card>
       </div>
 
+      <Seccion numero={3}>Galería</Seccion>
       <Galeria />
     </Pagina>
   );
