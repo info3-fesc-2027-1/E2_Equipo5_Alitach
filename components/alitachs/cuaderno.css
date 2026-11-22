@@ -197,7 +197,12 @@ body.cuaderno .hoja [data-slot="card-title"] {
   line-height: 1.1;
   letter-spacing: -0.01em;
   color: #0b1733;
-  background: linear-gradient(transparent 62%, rgb(125 217 87 / 0.45) 62% 90%, transparent 90%);
+  /* Marcatextos que sigue a cada renglón del título (aunque se parta en dos) */
+  text-decoration: underline;
+  text-decoration-color: rgb(125 217 87 / 0.5);
+  text-decoration-thickness: 0.32em;
+  text-underline-offset: -0.2em;
+  text-decoration-skip-ink: none;
 }
 
 /* ---------- Tablas, campos y botones ---------- */
