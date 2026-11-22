@@ -1,0 +1,1219 @@
+/* ============================================================
+   Estilo «cuaderno de diseñador de modas» de Alitachs
+   El sistema es la libreta de bocetos del taller:
+   - Tapa de tela marino con costura verde (menú lateral)
+   - Hoja de papel punteado para patronaje (área de trabajo)
+   - Cinta métrica bajo la barra superior
+   - Notas a mano en tinta azul (etiquetas, secciones y descripciones)
+   - Títulos en Playfair Display itálica con marcatextos verde
+   - Cada tarjeta sujeta con un alfiler
+   Colores del logo: marino #0b1733, azul #3a5f9a, verde #7dd957, papel #fbfaf5
+   Todo va dentro de body.cuaderno (lo pone app/layout.jsx).
+   ============================================================ */
+
+/* ---------- Hoja de papel punteado ---------- */
+body.cuaderno {
+  background: #e9e6dd;
+}
+body.cuaderno .hoja {
+  background-color: var(--papel);
+  background-image: radial-gradient(circle, rgb(58 95 154 / 0.17) 1px, transparent 1.3px);
+  background-size: 22px 22px;
+  background-position: 11px 11px;
+}
+body.cuaderno .hoja > main {
+  padding-top: 44px;
+}
+
+/* ---------- Tapa de tela marino con costura (menú lateral) ---------- */
+body.cuaderno [data-sidebar="sidebar"] {
+  position: relative;
+  background-color: #0b1733;
+  background-image:
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 0.03) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 3px);
+  color: #e8ecf5;
+  box-shadow: inset -12px 0 16px -12px rgb(0 0 0 / 0.7);
+}
+body.cuaderno [data-sidebar="sidebar"]::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  right: 8px;
+  border-right: 2px dashed rgb(125 217 87 / 0.65);
+  pointer-events: none;
+}
+body.cuaderno [data-slot="sidebar-container"] {
+  border-right: 0;
+}
+body.cuaderno [data-slot="sidebar-group-label"] {
+  font: 700 18px/1 var(--font-mano);
+  color: #9fb0cf;
+}
+body.cuaderno [data-slot="sidebar-menu-button"] {
+  color: #cfd6e6;
+  margin-right: 14px;
+  width: calc(100% - 14px);
+}
+body.cuaderno [data-slot="sidebar-menu-button"] svg {
+  color: var(--verde);
+}
+body.cuaderno [data-slot="sidebar-menu-button"]:hover {
+  background: rgb(255 255 255 / 0.06);
+  color: #fff;
+}
+body.cuaderno [data-slot="sidebar-menu-button"][data-active="true"] {
+  background: rgb(125 217 87 / 0.15);
+  color: #fff;
+  box-shadow: inset 3px 0 0 var(--verde);
+}
+
+/* ---------- Barra superior con cinta métrica ---------- */
+body.cuaderno .barra-cinta::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 16px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, #0b1733 0 1.5px, transparent 1.5px 50px) left top / 100% 9px
+      no-repeat,
+    repeating-linear-gradient(90deg, rgb(11 23 51 / 0.55) 0 1px, transparent 1px 10px) left top /
+      100% 5px no-repeat,
+    linear-gradient(#e6f5dc, #d9efcc);
+  border-bottom: 1px solid rgb(11 23 51 / 0.18);
+  box-shadow: 0 3px 6px -3px rgb(11 23 51 / 0.25);
+}
+
+/* ---------- Encabezado de cada pantalla ---------- */
+body.cuaderno .encabezado-hoja {
+  padding-bottom: 10px;
+  background: linear-gradient(90deg, #0b1733, #0b1733) left bottom / 100% 1.5px no-repeat;
+  animation: hoja-aparece 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+body.cuaderno .nota-etiqueta {
+  display: block;
+  margin-bottom: 6px;
+  font: 700 21px/1 var(--font-mano);
+  color: var(--tinta);
+}
+body.cuaderno .titulo-hoja {
+  display: inline;
+  margin: 0;
+  padding: 0 0.06em;
+  font-family: var(--font-titulo);
+  font-style: italic;
+  font-weight: 800;
+  font-size: clamp(44px, 5vw, 68px);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: #0b1733;
+  background: linear-gradient(
+      100deg,
+      transparent 0.05em,
+      rgb(125 217 87 / 0.55) 0.12em calc(100% - 0.08em),
+      transparent
+    )
+    0 78% / 100% 0.3em no-repeat;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+body.cuaderno .nota-desc {
+  margin: 12px 0 0;
+  font: 500 22px/1.1 var(--font-mano);
+  color: var(--tinta);
+}
+
+/* ---------- Títulos de sección: "(01) Filtrar" ---------- */
+body.cuaderno .seccion-nota {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: -18px;
+  font: 700 24px/1 var(--font-mano);
+  color: var(--tinta);
+  animation: hoja-aparece 0.6s 0.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+body.cuaderno .seccion-nota::after {
+  content: "";
+  flex: 1;
+  border-top: 1.5px dashed rgb(58 95 154 / 0.45);
+}
+
+/* ---------- Tarjetas: hoja sujeta con alfiler ---------- */
+body.cuaderno .hoja [data-slot="card"] {
+  position: relative;
+  background: #fffefb;
+  border-color: #e2dfd5;
+  border-radius: 10px;
+  box-shadow:
+    0 1px 0 #e2dfd5,
+    0 10px 20px -14px rgb(11 23 51 / 0.4);
+  animation: hoja-aparece 0.7s 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+body.cuaderno .hoja [data-slot="card"]::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 22px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  z-index: 3;
+  background: radial-gradient(circle at 35% 32%, #e9fbdc 0 18%, #7dd957 45%, #3a8a22 100%);
+  box-shadow: 0 2px 3px rgb(0 0 0 / 0.35);
+}
+body.cuaderno .hoja [data-slot="card"]::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 31px;
+  width: 2px;
+  height: 15px;
+  z-index: 2;
+  transform: rotate(-38deg);
+  transform-origin: top;
+  background: linear-gradient(90deg, #f1f3f6, #9aa3b2);
+  border-radius: 0 0 2px 2px;
+}
+/* Tarjetas sin relleno (tablas): el alfiler va a la derecha para no tapar los títulos */
+body.cuaderno .hoja [data-slot="card"].py-0::before {
+  left: auto;
+  right: 30px;
+}
+body.cuaderno .hoja [data-slot="card"].py-0::after {
+  left: auto;
+  right: 32px;
+}
+body.cuaderno .hoja [data-slot="card-title"] {
+  width: fit-content;
+  font-family: var(--font-titulo);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: #0b1733;
+  background: linear-gradient(transparent 62%, rgb(125 217 87 / 0.45) 62% 90%, transparent 90%);
+}
+
+/* ---------- Tablas, campos y botones ---------- */
+body.cuaderno .hoja [data-slot="table-head"] {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #0b1733;
+}
+body.cuaderno .hoja [data-slot="table-header"] [data-slot="table-row"] {
+  border-bottom: 1.5px solid #0b1733;
+}
+body.cuaderno .hoja [data-slot="table-body"] [data-slot="table-row"]:hover {
+  background: rgb(125 217 87 / 0.08);
+}
+body.cuaderno .hoja .fila-atrasada {
+  background: #fff5f3;
+  box-shadow: inset 4px 0 0 #d6332a;
+}
+body.cuaderno .hoja input,
+body.cuaderno .hoja textarea,
+body.cuaderno .hoja [data-slot="select-trigger"] {
+  background: #fffefb;
+}
+body.cuaderno .hoja input:focus-visible,
+body.cuaderno .hoja textarea:focus-visible {
+  border-color: #0b1733;
+  box-shadow: 0 0 0 3px rgb(125 217 87 / 0.35);
+}
+body.cuaderno [data-slot="button"] {
+  border-radius: 999px;
+}
+body.cuaderno [data-slot="button"][data-variant="default"] svg {
+  color: var(--verde);
+}
+body.cuaderno .texto-mano {
+  font: 500 19px/1.2 var(--font-mano);
+  color: var(--tinta);
+}
+
+/* ---------- Estados: botones de tela cosidos ---------- */
+.estado-cosido {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow:
+    inset 0 -2px 0 rgb(0 0 0 / 0.08),
+    0 1px 2px rgb(0 0 0 / 0.1);
+}
+.estado-cosido::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: 1px dashed currentColor;
+  border-radius: 999px;
+  opacity: 0.55;
+}
+.e-pendiente {
+  background: #f8e3b0;
+  color: #7a4e06;
+}
+.e-proceso {
+  background: #d5e0f2;
+  color: #24427a;
+}
+.e-entregado {
+  background: #d8f2c9;
+  color: #2b6a14;
+}
+.e-cancelado {
+  background: #e7e6e3;
+  color: #55595f;
+}
+.e-atrasado {
+  background: #ffd9d4;
+  color: #b3261e;
+}
+
+/* ---------- Tarjetas grandes que cambian de color (Panel y Detalle) ---------- */
+.accesos {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+.acciones {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.acceso {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 168px;
+  padding: 18px;
+  text-align: left;
+  font: inherit;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #dcdad4;
+  overflow: hidden;
+  cursor: pointer;
+  color: #0b1733;
+  box-shadow: 0 10px 20px -16px rgb(11 23 51 / 0.45);
+  transition:
+    color 0.35s,
+    border-color 0.35s,
+    transform 0.15s;
+  animation: hoja-aparece 0.7s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.acceso::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #0b1733;
+  transform: translateY(101%);
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.25, 1);
+}
+.acceso::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  z-index: 1;
+  border: 1.5px dashed rgb(11 23 51 / 0.22);
+  border-radius: 6px;
+  pointer-events: none;
+  transition: border-color 0.35s;
+}
+.acceso > * {
+  position: relative;
+  z-index: 2;
+}
+.acceso .n {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--tinta);
+}
+.acceso .n svg {
+  width: 22px;
+  height: 22px;
+  color: #0b1733;
+  transition: color 0.35s;
+}
+.acceso b {
+  margin-top: auto;
+  font-family: var(--font-titulo);
+  font-style: italic;
+  font-weight: 800;
+  font-size: clamp(22px, 2vw, 27px);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+}
+.acceso small {
+  padding-right: 22px;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: #5f6678;
+  transition: color 0.35s;
+}
+.acceso .flecha {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  font-weight: 800;
+  font-size: 18px;
+  transition: transform 0.35s;
+}
+.acceso.principal {
+  background: var(--verde);
+  border-color: var(--verde);
+}
+.acceso.principal .n {
+  color: #0b1733;
+}
+.acceso.principal small {
+  color: #24401a;
+}
+.acceso.peligro .n,
+.acceso.peligro .n svg {
+  color: #d6332a;
+}
+.acceso.elegida {
+  border-color: #0b1733;
+  box-shadow: 0 0 0 2px var(--verde);
+}
+.acceso:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+.acceso:focus-visible {
+  outline: 3px solid var(--verde);
+  outline-offset: 3px;
+}
+.acceso:active:not(:disabled) {
+  transform: scale(0.98);
+}
+/* Solo con mouse: en el celular no se queda pintado al tocar */
+@media (hover: hover) {
+  .acceso:not(:disabled):hover {
+    color: #fff;
+    border-color: #0b1733;
+  }
+  .acceso:not(:disabled):hover::before {
+    transform: none;
+  }
+  .acceso:not(:disabled):hover::after {
+    border-color: rgb(125 217 87 / 0.6);
+  }
+  .acceso:not(:disabled):hover .n,
+  .acceso:not(:disabled):hover .n svg {
+    color: var(--verde);
+  }
+  .acceso:not(:disabled):hover small {
+    color: #c8cfdd;
+  }
+  .acceso:not(:disabled):hover .flecha {
+    transform: translateX(5px);
+  }
+  .acceso.peligro:not(:disabled):hover::before {
+    background: #b42319;
+  }
+  .acceso.peligro:not(:disabled):hover .n,
+  .acceso.peligro:not(:disabled):hover .n svg {
+    color: #fff;
+  }
+}
+
+/* ---------- Indicadores: etiquetas colgantes de prenda ---------- */
+.tendedero {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  padding-top: 30px;
+}
+/* El hilo verde del que cuelgan las etiquetas */
+.tendedero::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  right: -8px;
+  top: 4px;
+  height: 14px;
+  /* La onda del hilo es un SVG dentro del CSS (la \ al final de renglón continúa el texto) */
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' \
+viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M0 3 Q 50 13 100 3 T 200 3' \
+fill='none' stroke='%237dd957' stroke-width='2.5' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E")
+    0 0 / 100% 100% no-repeat;
+  pointer-events: none;
+}
+.colgante {
+  position: relative;
+  display: block;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  transform-origin: 50% -24px;
+  filter: drop-shadow(0 6px 10px rgb(11 23 51 / 0.12));
+  animation: colgante-cae 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.colgante:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.colgante:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.colgante:nth-child(4) {
+  animation-delay: 0.24s;
+}
+.colgante:nth-child(5) {
+  animation-delay: 0.32s;
+}
+.colgante > .cuerda {
+  position: absolute;
+  left: 50%;
+  top: -24px;
+  z-index: 2;
+  width: 2px;
+  height: 36px;
+  margin-left: -1px;
+  background: var(--verde);
+  border-radius: 2px;
+}
+a.colgante,
+button.colgante {
+  cursor: pointer;
+}
+@media (hover: hover) {
+  a.colgante:hover,
+  button.colgante:hover {
+    animation: colgante-mece 1.6s ease-out;
+  }
+  a.colgante:hover .ir,
+  button.colgante:hover .ir {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+}
+.colgante:focus-visible {
+  outline: 3px solid var(--verde);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+.kpi-etiqueta {
+  position: relative;
+  padding: 30px 18px 18px;
+  border-radius: 6px;
+  background: #fff;
+  clip-path: polygon(22px 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%, 0 22px);
+}
+/* Ojillo de la etiqueta */
+.kpi-etiqueta::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 9px;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: var(--papel);
+  box-shadow:
+    0 0 0 3px #c9ccd3,
+    inset 0 1px 2px rgb(0 0 0 / 0.3);
+}
+/* Costura punteada */
+.kpi-etiqueta::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1.5px dashed rgb(11 23 51 / 0.28);
+  border-radius: 3px;
+  clip-path: polygon(17px 0, calc(100% - 17px) 0, 100% 17px, 100% 100%, 0 100%, 0 17px);
+  pointer-events: none;
+}
+.kpi-etiqueta .et {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #0b1733;
+}
+.kpi-etiqueta .val {
+  margin: 8px 0 0;
+  font-weight: 800;
+  font-size: clamp(26px, 2.6vw, 38px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: #0b1733;
+}
+.kpi-etiqueta .nota {
+  margin: 6px 0 0;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #5f6678;
+}
+.kpi-etiqueta .ir {
+  display: block;
+  margin-top: 10px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tinta);
+  opacity: 0.7;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+.kpi-etiqueta.verde {
+  background: #f3fbef;
+}
+.kpi-etiqueta.verde::after {
+  border-color: rgb(90 170 60 / 0.5);
+}
+.kpi-etiqueta.verde .ir {
+  color: #3f8a24;
+}
+.kpi-etiqueta.rojo {
+  background: #fff4f2;
+}
+.kpi-etiqueta.rojo::after {
+  border-color: rgb(220 38 38 / 0.45);
+}
+.kpi-etiqueta.rojo .val {
+  color: #d6332a;
+}
+.kpi-etiqueta.activo {
+  box-shadow: inset 0 0 0 2px var(--verde);
+}
+/* Etiquetas de precio (Productos): más chicas y en más columnas */
+.etiquetas-precio {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 34px 16px;
+  padding-top: 26px;
+}
+.etiquetas-precio .kpi-etiqueta {
+  padding: 28px 16px 16px;
+}
+.etiquetas-precio .kpi-etiqueta .val {
+  font-size: 26px;
+  margin-top: 10px;
+}
+
+/* ---------- Panel: frase del día, costura y maniquí ---------- */
+.panel-enc {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 10px;
+  background: linear-gradient(90deg, #0b1733, #0b1733) left bottom / 100% 1.5px no-repeat;
+}
+.frase-panel {
+  margin: 6px 0 0;
+  max-width: 22ch;
+  font-family: var(--font-titulo);
+  font-style: italic;
+  font-weight: 800;
+  font-size: clamp(30px, 3.6vw, 50px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: #0b1733;
+  animation: hoja-aparece 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+/* Número en su botoncito cosido, centrado */
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.18em;
+  height: 1.18em;
+  margin: 0 0.06em;
+  padding: 0;
+  border-radius: 0.28em;
+  line-height: 1;
+  font-style: normal;
+  font-variant-numeric: lining-nums tabular-nums;
+  vertical-align: -0.16em;
+  box-shadow:
+    inset 0 -3px 0 rgb(0 0 0 / 0.12),
+    0 2px 4px rgb(0 0 0 / 0.12);
+  animation: chip-salta 0.9s 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.chip::after {
+  content: "";
+  position: absolute;
+  inset: 0.09em;
+  border: 2px dashed currentColor;
+  border-radius: 0.2em;
+  opacity: 0.45;
+}
+.chip.rojo {
+  background: #ffe1dc;
+  color: #c92a1f;
+  rotate: -3deg;
+}
+.chip.verde {
+  background: #dcf5cf;
+  color: #2b6a14;
+  rotate: 2deg;
+}
+/* Puntadas verdes que se cosen bajo la frase */
+.costura-panel {
+  display: block;
+  width: min(100%, 760px);
+  height: 26px;
+  margin-top: 10px;
+  overflow: visible;
+}
+.costura-panel path {
+  fill: none;
+  stroke: var(--verde);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 14 9;
+  clip-path: inset(0 100% 0 0);
+  animation: costura-cose 1.4s 0.6s ease-in-out forwards;
+}
+.maniqui {
+  display: block;
+  width: 230px;
+  flex-shrink: 0;
+  margin: -30px 8px -8px 0;
+}
+.maniqui svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.maniqui .trazo {
+  fill: none;
+  stroke: #0b1733;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.maniqui .relleno {
+  fill: #fffefb;
+  stroke: none;
+}
+.maniqui .costura-m {
+  fill: none;
+  stroke: #3a5f9a;
+  stroke-width: 1.1;
+  stroke-dasharray: 4 3;
+  opacity: 0.8;
+}
+.maniqui .medida {
+  fill: none;
+  stroke: #3a5f9a;
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+.maniqui .cinta-m {
+  fill: none;
+  stroke: #7dd957;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+.maniqui .cinta-marcas {
+  fill: none;
+  stroke: #0b1733;
+  stroke-width: 6;
+  stroke-dasharray: 1 5;
+  opacity: 0.55;
+}
+.maniqui text {
+  font: 700 17px var(--font-mano);
+  fill: #3a5f9a;
+}
+.maniqui .dibuja {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: maniqui-dibuja 1.8s 0.3s cubic-bezier(0.45, 0, 0.25, 1) forwards;
+}
+.maniqui .aparece-m {
+  opacity: 0;
+  animation: maniqui-aparece 0.6s 1.6s ease forwards;
+}
+/* Lista corta de pedidos (Panel) */
+.lista-corta li a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 6px;
+  border-radius: 6px;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+}
+.lista-corta li + li a {
+  border-top: 1px solid #e2dfd5;
+}
+.lista-corta li a:hover {
+  background: rgb(125 217 87 / 0.08);
+  box-shadow: inset 4px 0 0 var(--verde);
+}
+.lista-corta .num {
+  width: 48px;
+  font-weight: 800;
+  color: #0b1733;
+}
+
+/* ---------- Clientes: fichas del directorio ---------- */
+.fichas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+}
+.ficha {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  border-radius: 10px;
+  border: 1px solid #dcdad4;
+  background: #fff;
+  box-shadow: 0 10px 20px -16px rgb(11 23 51 / 0.45);
+  transition:
+    color 0.35s,
+    border-color 0.35s;
+  animation: hoja-aparece 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.ficha::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #0b1733;
+  transform: translateY(101%);
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.25, 1);
+}
+.ficha::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1.5px dashed rgb(11 23 51 / 0.18);
+  border-radius: 6px;
+  pointer-events: none;
+}
+.ficha > * {
+  position: relative;
+}
+.ficha-cab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ficha-cab b {
+  font-weight: 800;
+  font-size: 17px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.inicial {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--verde);
+  color: #0b1733;
+  font-weight: 800;
+  font-size: 15px;
+}
+.ficha dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+.ficha dt {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #5f6678;
+  padding-top: 1px;
+}
+.ficha dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+@media (hover: hover) {
+  .ficha:hover {
+    color: #fff;
+    border-color: #0b1733;
+  }
+  .ficha:hover::before {
+    transform: none;
+  }
+  .ficha:hover::after {
+    border-color: rgb(125 217 87 / 0.5);
+  }
+  .ficha:hover dt {
+    color: #b9c2d6;
+  }
+}
+
+/* ---------- Detalle: pasos, caja de cancelado ---------- */
+.pasos {
+  list-style: none;
+  margin: 0;
+  padding: 10px 0 4px;
+  display: flex;
+  flex: 1;
+}
+.pasos li {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+.pasos li + li::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  right: calc(50% + 20px);
+  left: calc(-50% + 20px);
+  border-top: 3px dashed #d8d6d0;
+}
+.pasos li.hecho + li.hecho::before {
+  border-top-color: var(--verde);
+}
+.pasos .punto {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2.5px solid #d8d6d0;
+  background: #fff;
+}
+.pasos .punto svg {
+  width: 16px;
+  height: 16px;
+  color: #fff;
+}
+.pasos li.hecho .punto {
+  background: #5aa83a;
+  border-color: #5aa83a;
+}
+.pasos b {
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+}
+.pasos li:not(.hecho) b {
+  color: #5f6678;
+}
+.pasos small {
+  font-size: 12px;
+  color: #5f6678;
+}
+.cancelado-caja {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: 10px;
+  background: #fff1ef;
+  border: 1.5px dashed rgb(214 51 42 / 0.5);
+  color: #9f1d15;
+}
+.cancelado-caja svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.cancelado-caja p {
+  margin: 4px 0 0;
+}
+
+/* ---------- Nuevo pedido: nota de remisión ---------- */
+.nota-remision {
+  position: relative;
+  padding: 22px 20px 20px;
+  border-radius: 4px;
+  background: #fffdf6;
+  filter: drop-shadow(0 10px 14px rgb(11 23 51 / 0.1));
+  -webkit-mask:
+    radial-gradient(circle 7px at 50% 0, #0000 98%, #000) 0 0 / 18px 51% repeat-x,
+    radial-gradient(circle 7px at 50% 100%, #0000 98%, #000) 0 100% / 18px 51% repeat-x;
+  mask:
+    radial-gradient(circle 7px at 50% 0, #0000 98%, #000) 0 0 / 18px 51% repeat-x,
+    radial-gradient(circle 7px at 50% 100%, #0000 98%, #000) 0 100% / 18px 51% repeat-x;
+}
+.nr-cab {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 10px;
+  border-bottom: 1.5px dashed #c9c5ba;
+}
+.nr-cab b {
+  font-family: var(--font-titulo);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 22px;
+}
+.nr-cab span {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #5f6678;
+}
+.nr-datos {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 14px;
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+.nr-datos dt {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #5f6678;
+  padding-top: 2px;
+}
+.nr-datos dd {
+  margin: 0;
+  text-align: right;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.nr-lineas {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 12px 0 0;
+  border-top: 1.5px dashed #c9c5ba;
+  font-size: 14px;
+}
+.nr-lineas li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.nr-lineas li span {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+}
+.nr-lineas small {
+  font-weight: 400;
+  font-size: 12px;
+  color: #5f6678;
+}
+.nr-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 2px solid #0b1733;
+}
+.nr-total span {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.nr-total b {
+  font-weight: 800;
+  font-size: 30px;
+  letter-spacing: -0.04em;
+}
+
+/* ---------- Animaciones ---------- */
+@keyframes hoja-aparece {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes colgante-cae {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px) rotate(-12deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(0) rotate(5deg);
+  }
+  80% {
+    transform: rotate(-2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes colgante-mece {
+  0% {
+    transform: rotate(0);
+  }
+  20% {
+    transform: rotate(6deg);
+  }
+  45% {
+    transform: rotate(-4deg);
+  }
+  70% {
+    transform: rotate(2deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+@keyframes chip-salta {
+  from {
+    opacity: 0;
+    transform: scale(0) rotate(-30deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes costura-cose {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes maniqui-dibuja {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes maniqui-aparece {
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 900px) {
+  body.cuaderno .hoja > main {
+    padding-top: 36px;
+    gap: 28px;
+  }
+  .panel-enc {
+    flex-wrap: wrap;
+  }
+  .maniqui {
+    display: none;
+  }
+  .accesos,
+  .tendedero {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tendedero {
+    row-gap: 44px;
+  }
+  .tendedero::before {
+    display: none;
+  }
+  .acciones {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .acceso {
+    min-height: 140px;
+  }
+  .etiquetas-precio {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Tablas con clase tabla-movil: en el celular cada fila se vuelve una ficha
+   (cada celda necesita data-et con el nombre de su columna) */
+@media (max-width: 640px) {
+  .tabla-movil thead {
+    display: none;
+  }
+  .tabla-movil,
+  .tabla-movil tbody,
+  .tabla-movil tfoot,
+  .tabla-movil tr,
+  .tabla-movil td {
+    display: block;
+    width: 100%;
+  }
+  .tabla-movil tr {
+    padding: 12px 14px;
+  }
+  .tabla-movil td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 3px 0 !important;
+    text-align: right !important;
+    white-space: normal;
+  }
+  .tabla-movil td::before {
+    content: attr(data-et);
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #5f6678;
+    text-align: left;
+  }
+  .tabla-movil td:not([data-et])::before {
+    content: none;
+  }
+  .tabla-movil td[data-movil="ocultar"] {
+    display: none;
+  }
+  .tabla-movil td > * {
+    min-width: 0;
+  }
+}
+
+/* Accesibilidad: si el usuario activó «Reducir movimiento», se quitan las animaciones */
+@media (prefers-reduced-motion: reduce) {
+  body.cuaderno *,
+  body.cuaderno *::before,
+  body.cuaderno *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+  }
+}

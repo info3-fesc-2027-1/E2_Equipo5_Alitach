@@ -1,6 +1,7 @@
 "use client";
 
-// Barra superior: botón para plegar el menú, ruta actual y acceso rápido a nuevo pedido
+// Barra superior: botón para plegar el menú, ruta actual y acceso rápido a nuevo pedido.
+// Debajo lleva la cinta métrica del estilo cuaderno (clase barra-cinta en cuaderno.css)
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -15,8 +16,6 @@ const NOMBRES = {
     "nuevo-pedido": "Nuevo pedido",
     clientes: "Clientes",
     catalogo: "Productos",
-    pruebas: "Pruebas de lógica",
-    "prueba-datos": "Prueba de datos",
 };
 
 export function BarraSuperior() {
@@ -27,7 +26,7 @@ export function BarraSuperior() {
 
     return (
         <header
-            className={`sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-card px-4`}
+            className={`barra-cinta sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 bg-background px-4`}
         >
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
@@ -45,7 +44,7 @@ export function BarraSuperior() {
                 )}
             </nav>
             {pathname !== "/nuevo-pedido" && (
-                <Button asChild size="sm" className="ml-auto">
+                <Button asChild size="sm" className="ml-auto rounded-full">
                     <Link href="/nuevo-pedido">
                         <Plus /> <span className="hidden sm:inline">Nuevo pedido</span>
                     </Link>

@@ -1,6 +1,6 @@
 "use client";
 
-// Barra lateral del sistema: secciones de operación, catálogo y desarrollo
+// Barra lateral del sistema: tapa de tela marino con costura verde (Operación y Catálogo)
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,8 +10,6 @@ import {
     PlusCircle,
     Users,
     Shirt,
-    FlaskConical,
-    Database,
 } from "lucide-react";
 import {
     Sidebar,
@@ -26,6 +24,7 @@ import {
     SidebarMenuItem,
     SidebarRail,
 } from "@/components/ui/sidebar";
+import { LogoAlitachs } from "@/components/alitachs/logo-svg";
 
 const GRUPOS = [
     {
@@ -43,13 +42,6 @@ const GRUPOS = [
             { href: "/catalogo", texto: "Productos", icono: Shirt },
         ],
     },
-    {
-        titulo: "Desarrollo",
-        enlaces: [
-            { href: "/pruebas", texto: "Pruebas de lógica", icono: FlaskConical },
-            { href: "/prueba-datos", texto: "Prueba de datos", icono: Database },
-        ],
-    },
 ];
 
 // Una ruta está activa si es la misma o una subruta (ej. /pedidos/3)
@@ -62,21 +54,18 @@ export function AppSidebar() {
     const pathname = usePathname();
 
     return (
-        <Sidebar collapsible="icon">
+        <Sidebar collapsible="icon" className="tapa-tela">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
                             <Link href="/">
-                                <div
-                                    className={`flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary
-                  text-primary-foreground font-bold`}
-                                >
-                                    A
+                                <div className="size-8 shrink-0 overflow-hidden rounded-full bg-[#f0f0f0]">
+                                    <LogoAlitachs className="size-full" />
                                 </div>
                                 <div className="grid leading-tight group-data-[collapsible=icon]:hidden">
                                     <span className="font-semibold">Alitach</span>
-                                    <span className="text-xs text-muted-foreground">
+                                    <span className="text-xs text-sidebar-foreground/70">
                                         Taller de confección
                                     </span>
                                 </div>
@@ -113,7 +102,7 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <p className="px-2 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
+                <p className="px-2 text-xs text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">
                     Equipo 5 · Modelo Espiral
                 </p>
             </SidebarFooter>

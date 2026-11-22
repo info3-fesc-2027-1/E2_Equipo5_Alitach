@@ -1,6 +1,7 @@
 // Plantilla del sitio: barra lateral, barra superior y avisos
-import { Inter } from "next/font/google";
+import { Caveat, Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import "@/components/alitachs/cuaderno.css";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
@@ -9,6 +10,15 @@ import { BarraSuperior } from "@/components/barra-superior";
 import { EntradaLogo } from "@/components/alitachs/entrada-logo";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+// Títulos: la misma familia del monograma «AL» del logo
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: "800",
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
+});
+// Notas a mano en tinta azul
+const caveat = Caveat({ subsets: ["latin"], weight: ["500", "700"], variable: "--font-caveat" });
 
 export const metadata = {
   title: "Alitach Pedidos",
@@ -17,12 +27,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es" className={inter.variable}>
-      <body>
+    <html lang="es" className={`${inter.variable} ${playfair.variable} ${caveat.variable}`}>
+      <body className="cuaderno">
         <TooltipProvider>
           <SidebarProvider>
             <AppSidebar />
-            <SidebarInset className="min-w-0 bg-background">
+            <SidebarInset className="hoja min-w-0 bg-background">
               <BarraSuperior />
               {children}
             </SidebarInset>
