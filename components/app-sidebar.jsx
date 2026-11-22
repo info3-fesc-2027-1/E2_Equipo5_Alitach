@@ -2,6 +2,7 @@
 
 // Barra lateral del sistema: tapa de tela marino con costura verde (Operación y Catálogo)
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -23,6 +24,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarRail,
+    useSidebar,
 } from "@/components/ui/sidebar";
 import { LogoAlitachs } from "@/components/alitachs/logo-svg";
 
@@ -52,6 +54,12 @@ function estaActiva(pathname, href) {
 
 export function AppSidebar() {
     const pathname = usePathname();
+    const { setOpenMobile } = useSidebar();
+
+    // En el celular el menú se cierra solo al cambiar de pantalla
+    useEffect(() => {
+        setOpenMobile(false);
+    }, [pathname, setOpenMobile]);
 
     return (
         <Sidebar collapsible="icon" className="tapa-tela">

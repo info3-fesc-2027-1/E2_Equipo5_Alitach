@@ -126,6 +126,7 @@ export default function DetallePedido() {
   const total = calcularTotal(prendas);
   const piezas = prendas.reduce((suma, p) => suma + p.piezas, 0);
   const cambioFecha =
+    Boolean(pedido.fecha_compromiso_original) &&
     pedido.fecha_compromiso_original !== pedido.fecha_compromiso;
 
   // Fecha en que el pedido llegó a cada paso (tomada del historial)

@@ -164,10 +164,19 @@ export function dinero(valor) {
 }
 
 // Fecha "2026-11-29" a "29 nov 2026" sin problemas de zona horaria
+// Si trae hora (ej. fecha_creacion), se convierte a la hora local antes de mostrarla
 export function fechaCorta(texto) {
     if (!texto) return "-";
-    const [a, m, d] = String(texto).slice(0, 10).split("-").map(Number);
-    return new Date(a, m - 1, d).toLocaleDateString("es-MX", {
+    const cadena = String(texto);
+    let fecha;
+    if (cadena.length > 10) {
+        fecha = new Date(cadena);
+    } else {
+        const [a, m, d] = cadena.split("-").map(Number);
+        fecha = new Date(a, m - 1, d);
+    }
+    if (isNaN(fecha)) return "-";
+    return fecha.toLocaleDateString("es-MX", {
         day: "numeric",
         month: "short",
         year: "numeric",
