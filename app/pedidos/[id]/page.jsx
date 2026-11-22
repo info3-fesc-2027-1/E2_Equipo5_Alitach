@@ -1,9 +1,9 @@
 "use client";
-// Detalle del pedido (RF4): cliente, prendas, fechas, historial y cambio de estado
+// Detalle del pedido (RF4): datos, prendas, estado, acciones (cambiar estado, fecha o cancelar) e historial
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Check, Mail, Phone, XCircle } from "lucide-react";
+import { ArrowRight, CalendarDays, Check, CircleX, Mail, Phone, XCircle } from "lucide-react";
 import { obtenerPedido, obtenerHistorial } from "../../../lib/datos";
 import { calcularTotal, esAtrasado } from "../../../lib/logica";
 import CambiarEstado from "./CambiarEstado";
@@ -30,10 +30,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Acceso,
   AtrasadoBadge,
+  EncabezadoPagina,
   EstadoBadge,
   ListaErrores,
   Pagina,
+  Seccion,
   dinero,
   fechaCorta,
 } from "@/components/comunes";
@@ -54,6 +57,8 @@ export default function DetallePedido() {
   const [historial, setHistorial] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  // Qué acción eligió el personal: "estado", "fecha", "cancelar" o ninguna
+  const [accion, setAccion] = useState(null);
 
   // Trae el pedido y su historial de Supabase
   async function cargar() {
@@ -73,6 +78,12 @@ export default function DetallePedido() {
   useEffect(() => {
     cargar();
   }, [id]);
+
+  // Después de guardar un cambio se cierra la acción y se recarga el pedido
+  async function alTerminarAccion() {
+    setAccion(null);
+    await cargar();
+  }
 
   if (cargando) {
     return (
@@ -122,42 +133,43 @@ export default function DetallePedido() {
     return cambio ? cambio.fecha_hora : null;
   }
   const pasoActual = PASOS.indexOf(pedido.estado);
+  const atrasado = esAtrasado(pedido);
+  // Entregado y Cancelado son estados finales: ya no se cambia nada
+  const final = pedido.estado === "Entregado" || pedido.estado === "Cancelado";
+  const estadoMinusculas = pedido.estado.toLowerCase();
+
+  // Abre la acción elegida (o la cierra si se vuelve a picar)
+  const elegir = (nombre) => setAccion(accion === nombre ? null : nombre);
 
   return (
     <Pagina>
-      {/* Encabezado */}
-      <div className="flex flex-wrap items-center gap-3">
-        <Button
-          asChild
-          variant="ghost"
-          size="icon"
-          aria-label="Volver a pedidos"
-        >
-          <Link href="/pedidos">
-            <ArrowLeft />
-          </Link>
-        </Button>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Pedido #{pedido.id}
-        </h1>
-        <EstadoBadge estado={pedido.estado} />
-        {esAtrasado(pedido) && <AtrasadoBadge />}
-        <div className="ml-auto">
-          <CancelarPedido pedido={pedido} alCambiar={cargar} />
+      {/* Encabezado: número del pedido, cliente, estado y anillo de avance */}
+      <EncabezadoPagina
+        etiqueta="Operación"
+        titulo={"Pedido #" + pedido.id}
+        descripcion={pedido.cliente?.nombre}
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <EstadoBadge estado={pedido.estado} />
+          {atrasado && <AtrasadoBadge />}
         </div>
-      </div>
-      <p className="-mt-4 text-sm text-muted-foreground">
-        Creado el {fechaCorta(pedido.fecha_creacion)} · Entrega comprometida el{" "}
-        {fechaCorta(pedido.fecha_compromiso)}
-      </p>
-      {/* Cliente / Fechas / Montos */}
-      <div className="grid gap-4 md:grid-cols-3">
+        {pedido.estado !== "Cancelado" && (
+          <AnilloAvance
+            paso={pasoActual + 1}
+            total={PASOS.length}
+            atrasado={atrasado}
+          />
+        )}
+      </EncabezadoPagina>
+
+      {/* Contacto / Fechas / Montos */}
+      <Seccion numero={1}>Datos</Seccion>
+      <div className="grid gap-5 md:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle>Cliente</CardTitle>
+            <CardTitle>Contacto</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <p className="font-medium">{pedido.cliente?.nombre}</p>
             {pedido.cliente?.telefono && (
               <a
                 href={"tel:" + pedido.cliente.telefono}
@@ -169,9 +181,9 @@ export default function DetallePedido() {
             {pedido.cliente?.correo && (
               <a
                 href={"mailto:" + pedido.cliente.correo}
-                className="flex items-center gap-2 text-primary hover:underline"
+                className="flex items-center gap-2 break-all text-primary hover:underline"
               >
-                <Mail className="size-4" /> {pedido.cliente.correo}
+                <Mail className="size-4 shrink-0" /> {pedido.cliente.correo}
               </a>
             )}
             {pedido.cliente?.notas && (
@@ -193,7 +205,7 @@ export default function DetallePedido() {
               <dd
                 className={cn(
                   "text-right font-medium",
-                  esAtrasado(pedido) && "text-red-600",
+                  atrasado && "text-red-600",
                 )}
               >
                 {fechaCorta(pedido.fecha_compromiso)}
@@ -225,7 +237,7 @@ export default function DetallePedido() {
               </div>
               <div className="flex items-baseline justify-between border-t pt-2">
                 <dt className="font-medium">Total</dt>
-                <dd className="text-base font-semibold">
+                <dd className="text-xl font-extrabold tracking-tight">
                   {dinero(total)}
                 </dd>
               </div>
@@ -233,197 +245,214 @@ export default function DetallePedido() {
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 2xl:grid-cols-[1fr_320px]">
-        <div className="min-w-0 space-y-4">
-          {/* Prendas */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Prendas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Producto</TableHead>
-                    <TableHead>Personalización</TableHead>
-                    <TableHead>Talla</TableHead>
-                    <TableHead>Color</TableHead>
-                    <TableHead className="text-right">Piezas</TableHead>
-                    <TableHead className="text-right">Precio c/u</TableHead>
-                    <TableHead className="text-right">Subtotal</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {prendas.map((p) => (
-                    <TableRow key={p.id}>
-                      <TableCell>
-                        <p className="font-medium">
-                          {p.producto?.tipo_prenda}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {p.producto?.modelo}
-                        </p>
-                      </TableCell>
-                      <TableCell>
-                        {p.opcion_personalizacion ? (
-                          p.opcion_personalizacion.tipo +
-                          ": " +
-                          p.opcion_personalizacion.descripcion
-                        ) : (
-                          <span className="text-muted-foreground">
-                            Sin personalización
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell>{p.talla || "-"}</TableCell>
-                      <TableCell>{p.color || "-"}</TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {p.piezas}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {dinero(p.precio_unitario)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {dinero(p.piezas * p.precio_unitario)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-right">
-                      Total
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {dinero(total)}
-                    </TableCell>
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </CardContent>
-          </Card>
-          {/* Estado del pedido */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Estado del pedido</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {pedido.estado === "Cancelado" ? (
-                <div
-                  className={`flex gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm`}
-                >
-                  <XCircle className="size-5 shrink-0 text-red-600" />
-                  <div>
-                    <p className="font-medium text-red-800">
-                      Pedido cancelado
-                    </p>
-                    <p className="text-red-700">
-                      Motivo: {pedido.motivo_cancelacion || "-"}
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-6">
-                  <AnilloAvance
-                    paso={pasoActual + 1}
-                    total={PASOS.length}
-                    atrasado={esAtrasado(pedido)}
-                  />
-                  <ol className="flex flex-1">
-                    {PASOS.map((paso, i) => {
-                      const hecho = i <= pasoActual;
-                      const fecha = fechaDePaso(paso);
-                      return (
-                        <li key={paso} className="relative flex-1">
-                          {i > 0 && (
-                            <span
-                              className={cn(
-                                "absolute top-3 right-1/2 -z-0 h-0.5 w-full",
-                                hecho ? "bg-green-600" : "bg-border",
-                              )}
-                            />
-                          )}
-                          <div className="relative z-[1] flex flex-col items-center text-center">
-                            <span
-                              className={cn(
-                                `flex size-6 items-center justify-center rounded-full border-2 bg-card`,
-                                hecho
-                                  ? "border-green-600 bg-green-600 text-white"
-                                  : "border-border",
-                              )}
-                            >
-                              {hecho && <Check className="size-3.5" />}
-                            </span>
-                            <span
-                              className={cn(
-                                "mt-2 text-sm",
-                                hecho ? "font-medium" : "text-muted-foreground",
-                              )}
-                            >
-                              {paso}
-                            </span>
-                            {hecho && fecha && (
-                              <span className="text-xs text-muted-foreground">
-                                {fechaCorta(fecha)}
-                              </span>
-                            )}
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ol>
-                </div>
-              )}
-              <CambiarEstado pedido={pedido} alCambiar={cargar} />
-            </CardContent>
-          </Card>
-        </div>
-        {/* Cambiar fecha e Historial: abajo en dos columnas; al lado solo en pantallas muy anchas */}
-        <div className="grid items-start gap-4 md:grid-cols-2 2xl:grid-cols-1 2xl:content-start">
-          <Card>
-            <CardHeader>
-              <CardTitle>Cambiar fecha compromiso</CardTitle>
-              <CardDescription>
-                La fecha original se conserva.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CambiarFecha pedido={pedido} alCambiar={cargar} />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent>
-              <Desplegable
-                titulo="Historial"
-                detalle={historial.length + (historial.length === 1 ? " cambio" : " cambios")}
-              >
-                {historial.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">
-                    Todavía no hay cambios de estado.
-                  </p>
-                ) : (
-                  <ol className="space-y-4 border-l pl-4">
-                    {historial.map((c) => (
-                      <li key={c.id} className="relative text-sm">
-                        <span
-                          className={`absolute top-1.5 -left-[21px] size-2.5 rounded-full bg-primary`}
-                        />
-                        <p className="font-medium">
-                          {c.estado_anterior} → {c.estado_nuevo}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {fechaHora(c.fecha_hora)} · por{" "}
-                          {c.usuario?.nombre || "?"}
-                        </p>
-                      </li>
-                    ))}
-                  </ol>
-                )}
-              </Desplegable>
-            </CardContent>
-          </Card>
-        </div>
+
+      {/* Prendas */}
+      <Seccion numero={2}>Prendas</Seccion>
+      <Card className="gap-0 py-0">
+        <CardContent className="p-0">
+          <Table className="tabla-movil">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="pl-4">Producto</TableHead>
+                <TableHead>Personalización</TableHead>
+                <TableHead>Talla</TableHead>
+                <TableHead>Color</TableHead>
+                <TableHead className="text-right">Piezas</TableHead>
+                <TableHead className="text-right">Precio c/u</TableHead>
+                <TableHead className="pr-4 text-right">Subtotal</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {prendas.map((p) => (
+                <TableRow key={p.id}>
+                  <TableCell data-et="Producto" className="pl-4">
+                    <div>
+                      <p className="font-medium">{p.producto?.tipo_prenda}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {p.producto?.modelo}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell data-et="Personalización">
+                    {p.opcion_personalizacion ? (
+                      p.opcion_personalizacion.tipo +
+                      ": " +
+                      p.opcion_personalizacion.descripcion
+                    ) : (
+                      <span className="text-muted-foreground">
+                        Sin personalización
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell data-et="Talla">{p.talla || "-"}</TableCell>
+                  <TableCell data-et="Color">{p.color || "-"}</TableCell>
+                  <TableCell data-et="Piezas" className="text-right tabular-nums">
+                    {p.piezas}
+                  </TableCell>
+                  <TableCell data-et="Precio c/u" className="text-right tabular-nums">
+                    {dinero(p.precio_unitario)}
+                  </TableCell>
+                  <TableCell data-et="Subtotal" className="pr-4 text-right font-semibold tabular-nums">
+                    {dinero(p.piezas * p.precio_unitario)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={6} data-movil="ocultar" className="text-right">
+                  Total
+                </TableCell>
+                <TableCell data-et="Total" className="pr-4 text-right font-extrabold tabular-nums">
+                  {dinero(total)}
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Estado del pedido */}
+      <Seccion numero={3}>Estado del pedido</Seccion>
+      <Card>
+        <CardContent>
+          {pedido.estado === "Cancelado" ? (
+            <div className="cancelado-caja">
+              <XCircle />
+              <div>
+                <b>Pedido cancelado</b>
+                <p>Motivo: {pedido.motivo_cancelacion || "-"}</p>
+              </div>
+            </div>
+          ) : (
+            <ol className="pasos">
+              {PASOS.map((paso, i) => {
+                const hecho = i <= pasoActual;
+                const fecha = fechaDePaso(paso);
+                return (
+                  <li key={paso} className={cn(hecho && "hecho")}>
+                    <span className="punto">{hecho && <Check />}</span>
+                    <b>{paso}</b>
+                    {hecho && fecha && <small>{fechaCorta(fecha)}</small>}
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Acciones: tarjetas que se pintan de marino; la elegida abre su formulario */}
+      <Seccion numero={4}>¿Qué quieres hacer con este pedido?</Seccion>
+      <div className="acciones">
+        <Acceso
+          icono={ArrowRight}
+          titulo="Cambiar estado"
+          texto={
+            final
+              ? "El pedido ya está " + estadoMinusculas + ": es un estado final."
+              : "Avanza el pedido. Se guarda quién y cuándo."
+          }
+          disabled={final}
+          elegida={accion === "estado"}
+          onClick={() => elegir("estado")}
+        />
+        <Acceso
+          icono={CalendarDays}
+          titulo="Cambiar fecha"
+          texto={
+            final
+              ? "Solo se cambia la fecha de un pedido Pendiente o En proceso."
+              : "La fecha original se conserva."
+          }
+          disabled={final}
+          elegida={accion === "fecha"}
+          onClick={() => elegir("fecha")}
+        />
+        <Acceso
+          icono={CircleX}
+          titulo="Cancelar pedido"
+          texto={
+            final
+              ? "Un pedido " + estadoMinusculas + " no se puede cancelar."
+              : "Hay que escribir el motivo."
+          }
+          peligro
+          disabled={final}
+          elegida={accion === "cancelar"}
+          onClick={() => elegir("cancelar")}
+        />
       </div>
+
+      {!final && accion === "estado" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Cambiar estado</CardTitle>
+            <CardDescription>Se guarda en el historial quién lo cambió y cuándo.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <CambiarEstado pedido={pedido} alCambiar={alTerminarAccion} />
+          </CardContent>
+        </Card>
+      )}
+      {!final && accion === "fecha" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Cambiar fecha compromiso</CardTitle>
+            <CardDescription>La fecha original se conserva.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <CambiarFecha pedido={pedido} alCambiar={alTerminarAccion} />
+          </CardContent>
+        </Card>
+      )}
+      {!final && accion === "cancelar" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Cancelar pedido</CardTitle>
+            <CardDescription>
+              El pedido pasa a Cancelado y ya no cambia de estado. Se pide el motivo.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <CancelarPedido pedido={pedido} alCambiar={alTerminarAccion} />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Historial */}
+      <Seccion numero={5}>Historial</Seccion>
+      <Card>
+        <CardContent>
+          <Desplegable
+            titulo="Cambios de estado"
+            detalle={historial.length + (historial.length === 1 ? " cambio" : " cambios")}
+          >
+            {historial.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Todavía no hay cambios de estado.
+              </p>
+            ) : (
+              <ol className="space-y-4 border-l pl-4">
+                {historial.map((c) => (
+                  <li key={c.id} className="relative text-sm">
+                    <span
+                      className={`absolute top-1.5 -left-[21px] size-2.5 rounded-full bg-primary`}
+                    />
+                    <p className="font-medium">
+                      {c.estado_anterior} → {c.estado_nuevo}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {fechaHora(c.fecha_hora)} · por{" "}
+                      {c.usuario?.nombre || "?"}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </Desplegable>
+        </CardContent>
+      </Card>
     </Pagina>
   );
 }
