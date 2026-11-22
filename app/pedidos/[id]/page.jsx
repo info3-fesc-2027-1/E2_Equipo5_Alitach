@@ -81,6 +81,8 @@ export default function DetallePedido() {
 
   // Después de guardar un cambio se cierra la acción y se recarga el pedido
   async function alTerminarAccion() {
+    // Deja ver la palomita antes de cerrar el formulario
+    await new Promise((r) => setTimeout(r, 1200));
     setAccion(null);
     await cargar();
   }

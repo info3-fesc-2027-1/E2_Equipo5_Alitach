@@ -1,5 +1,5 @@
 "use client";
-// Pantalla de nuevo pedido (RF3):: elegir cliente, agregar prendas y fecha compromiso
+// Pantalla de nuevo pedido (RF3): elegir cliente, agregar prendas y fecha compromiso
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
