@@ -1,0 +1,27 @@
+/* Avisos con los colores de Alitachs que caen desde arriba con un rebote (Toast Drop) */
+.avisos-alitachs [data-sonner-toast] {
+  transition:
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.3s,
+    height 0.4s,
+    box-shadow 0.2s !important;
+}
+.avisos-alitachs [data-sonner-toast][data-type="success"] {
+  background: #0b1733 !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-left: 5px solid #82ce61 !important;
+}
+.avisos-alitachs [data-sonner-toast][data-type="success"] [data-icon] {
+  color: #82ce61;
+}
+.avisos-alitachs [data-sonner-toast][data-type="success"] [data-button] {
+  background: #82ce61 !important;
+  color: #0b1733 !important;
+}
+.avisos-alitachs [data-sonner-toast][data-mounted="true"] [data-icon] {
+  animation: aviso-icono 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) 0.25s both;
+}
+@keyframes aviso-icono {
+  from { transform: scale(0) rotate(-90deg); }
+}
