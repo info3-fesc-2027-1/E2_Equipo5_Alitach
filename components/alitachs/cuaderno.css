@@ -186,7 +186,7 @@ body.cuaderno .hoja [data-slot="card"].py-0::before {
 }
 body.cuaderno .hoja [data-slot="card"].py-0::after {
   left: auto;
-  right: 23px;
+  right: 32px;
 }
 body.cuaderno .hoja [data-slot="card-title"] {
   width: fit-content;

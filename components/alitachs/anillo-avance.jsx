@@ -42,9 +42,7 @@ export function AnilloAvance({ paso, total, atrasado }) {
                 {atrasado && !completo ? (
                     <span className="mt-0.5 text-[10px] font-semibold text-red-600">Atrasado</span>
                 ) : (
-                    <span className="mt-0.5 text-[10px] text-muted-foreground">
-                        {paso} de {total}
-                    </span>
+                    <span className="mt-0.5 text-[10px] text-muted-foreground">avance</span>
                 )}
             </span>
         </div>
