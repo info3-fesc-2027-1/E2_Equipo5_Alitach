@@ -34,6 +34,23 @@ function Letras({ texto }) {
     ));
 }
 
+// Si el navegador bloquea sessionStorage, la entrada se muestra y el sistema sigue funcionando
+function leerVista() {
+    try {
+        return sessionStorage.getItem("entrada-vista");
+    } catch {
+        return null;
+    }
+}
+
+function guardarVista() {
+    try {
+        sessionStorage.setItem("entrada-vista", "si");
+    } catch {
+        // Sin sessionStorage solo se vuelve a ver la entrada al recargar
+    }
+}
+
 export function EntradaLogo() {
     // "decidiendo": todavía no sabemos si ya se vio (cubre la pantalla sin contenido)
     // "mostrando": corre la animación · "oculta": ya no se pinta nada
@@ -44,7 +61,7 @@ export function EntradaLogo() {
 
     // ¿Ya se vio la entrada en esta pestaña?
     useEffect(() => {
-        if (sessionStorage.getItem("entrada-vista")) {
+        if (leerVista()) {
             window.dispatchEvent(new Event("alitachs:entrada-lista"));
             setFase("oculta");
         } else {
@@ -66,7 +83,7 @@ export function EntradaLogo() {
             if (cerrada) return;
             cerrada = true;
             clearTimeout(respaldo);
-            sessionStorage.setItem("entrada-vista", "si");
+            guardarVista();
             document.body.style.overflow = "";
             window.dispatchEvent(new Event("alitachs:entrada-lista"));
             setFase("oculta");
@@ -324,10 +341,6 @@ export function EntradaLogo() {
 
                     <div className="revista">
                         <header className="cabeza">
-                            <span className="marca">
-                                <i />
-                                Alitachs
-                            </span>
                             <span className="pills">
                                 {PRENDAS.map((p) => (
                                     <span key={p} className="pill">
@@ -371,7 +384,7 @@ export function EntradaLogo() {
 
                         <footer className="pie">
                             <span>(Sistema de pedidos)</span>
-                            <span className="punto">Alitachs</span>
+                            <span className="punto">Equipo ASKI</span>
                         </footer>
                     </div>
                 </>

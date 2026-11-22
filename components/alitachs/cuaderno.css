@@ -26,8 +26,10 @@ body.cuaderno .hoja > main {
 }
 
 /* ---------- Tapa de tela marino con costura (menú lateral) ---------- */
-body.cuaderno [data-sidebar="sidebar"] {
+body.cuaderno [data-sidebar="sidebar"]:not([data-mobile="true"]) {
   position: relative;
+}
+body.cuaderno [data-sidebar="sidebar"] {
   background-color: #0b1733;
   background-image:
     repeating-linear-gradient(0deg, rgb(255 255 255 / 0.03) 0 1px, transparent 1px 3px),
