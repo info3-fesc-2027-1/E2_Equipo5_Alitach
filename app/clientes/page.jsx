@@ -1,7 +1,7 @@
-
 "use client";
 
-// Pantalla de clientes (RF1): registrar un cliente y buscarlo por nombre
+// Pantalla de clientes (RF1): registrar un cliente y buscarlo por nombre en el directorio de fichas
+
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Search } from "lucide-react";
@@ -18,14 +18,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { EncabezadoPagina, ListaErrores, Pagina } from "@/components/comunes";
+  EncabezadoPagina,
+  ListaErrores,
+  Pagina,
+  Seccion,
+} from "@/components/comunes";
 import { BotonGuardar } from "@/components/alitachs/boton-guardar";
 import { Sacudir } from "@/components/alitachs/sacudir";
 import { useEnvio } from "@/components/alitachs/usar-envio";
@@ -38,6 +35,7 @@ export default function Clientes() {
   const [texto, setTexto] = useState("");
   const [resultados, setResultados] = useState([]);
   const [guardando, setGuardando] = useState(false);
+  const [total, setTotal] = useState(null);
   const envio = useEnvio();
 
   // Marca en rojo el campo si algún error lo menciona
@@ -47,7 +45,10 @@ export default function Clientes() {
   // Al abrir la pantalla muestra todos los clientes
   useEffect(() => {
     buscarClientes("")
-      .then(setResultados)
+      .then((lista) => {
+        setResultados(lista);
+        setTotal(lista.length);
+      })
       .catch((e) => setErrores(["Error al cargar clientes: " + e.message]));
   }, []);
 
@@ -61,18 +62,16 @@ export default function Clientes() {
     e.preventDefault();
     const resultado = validarCliente(cliente);
     setErrores(resultado.errores);
-
     if (!resultado.valido) {
       envio.fallo();
       return;
     }
-
     setGuardando(true);
-
     try {
       await guardarCliente(cliente);
       envio.exito();
       toast.success("Cliente guardado.");
+      setTotal((n) => (n ?? 0) + 1);
       setCliente(VACIO);
       setResultados(await buscarClientes(texto));
     } catch (error) {
@@ -86,7 +85,6 @@ export default function Clientes() {
   // Busca clientes que tengan el texto en su nombre
   async function buscar(e) {
     e.preventDefault();
-
     try {
       setResultados(await buscarClientes(texto));
     } catch (error) {
@@ -94,141 +92,154 @@ export default function Clientes() {
     }
   }
 
+  // Directorio en orden alfabético
+  const fichas = [...resultados].sort((a, b) =>
+    a.nombre.localeCompare(b.nombre)
+  );
+
   return (
     <Pagina>
       <EncabezadoPagina
+        etiqueta="Catálogo"
         titulo="Clientes"
-        descripcion="Registra clientes y búscalos por nombre."
+        descripcion={
+          total === null
+            ? "Cargando clientes..."
+            : total +
+              (total === 1 ? " cliente registrado" : " clientes registrados")
+        }
       />
 
-      <div className="grid gap-4 lg:grid-cols-[340px_1fr] lg:items-start">
-        <Card>
-          <CardHeader>
-            <CardTitle>Registrar cliente</CardTitle>
-            <CardDescription>Necesita teléfono o correo.</CardDescription>
-          </CardHeader>
+      <div className="grid gap-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:items-start">
+        <div className="flex min-w-0 flex-col gap-9">
+          <Seccion numero={1}>Registrar cliente</Seccion>
+          <Card>
+            <CardHeader>
+              <CardTitle>Nuevo cliente</CardTitle>
+              <CardDescription>
+                Necesita nombre y al menos teléfono o correo.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={registrar} className="space-y-4">
+                <div className="grid gap-1.5">
+                  <Label htmlFor="nombre">Nombre</Label>
+                  <Sacudir veces={falla("nombre") ? envio.intentos : 0}>
+                    <Input
+                      id="nombre"
+                      name="nombre"
+                      value={cliente.nombre}
+                      onChange={cambiar}
+                      placeholder="Nombre o empresa"
+                      aria-invalid={falla("nombre")}
+                    />
+                  </Sacudir>
+                </div>
 
-          <CardContent>
-            <form onSubmit={registrar} className="space-y-4">
-              <div className="grid gap-1.5">
-                <Label htmlFor="nombre">Nombre</Label>
-                <Sacudir veces={falla("nombre") ? envio.intentos : 0}>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="grid gap-1.5">
+                    <Label htmlFor="telefono">Teléfono</Label>
+                    <Sacudir veces={falla("teléfono") ? envio.intentos : 0}>
+                      <Input
+                        id="telefono"
+                        name="telefono"
+                        inputMode="numeric"
+                        value={cliente.telefono}
+                        onChange={cambiar}
+                        placeholder="10 números"
+                        aria-invalid={falla("teléfono")}
+                      />
+                    </Sacudir>
+                  </div>
+                  <div className="grid gap-1.5">
+                    <Label htmlFor="correo">Correo</Label>
+                    <Sacudir veces={falla("correo") ? envio.intentos : 0}>
+                      <Input
+                        id="correo"
+                        name="correo"
+                        type="email"
+                        value={cliente.correo}
+                        onChange={cambiar}
+                        placeholder="ana@correo.com"
+                        aria-invalid={falla("correo")}
+                      />
+                    </Sacudir>
+                  </div>
+                </div>
+
+                <div className="grid gap-1.5">
+                  <Label htmlFor="notas">Notas de personalización</Label>
                   <Input
-                    id="nombre"
-                    name="nombre"
-                    value={cliente.nombre}
+                    id="notas"
+                    name="notas"
+                    value={cliente.notas}
                     onChange={cambiar}
-                    aria-invalid={falla("nombre")}
+                    placeholder="Preferencias de bordado, tallas, colores..."
                   />
-                </Sacudir>
-              </div>
+                </div>
 
-              <div className="grid gap-1.5">
-                <Label htmlFor="telefono">Teléfono</Label>
-                <Sacudir veces={falla("teléfono") ? envio.intentos : 0}>
-                  <Input
-                    id="telefono"
-                    name="telefono"
-                    value={cliente.telefono}
-                    onChange={cambiar}
-                    placeholder="10 números"
-                    aria-invalid={falla("teléfono")}
-                  />
-                </Sacudir>
-              </div>
+                <BotonGuardar
+                  guardando={guardando}
+                  listo={envio.listo}
+                  className="w-full"
+                >
+                  Registrar
+                </BotonGuardar>
 
-              <div className="grid gap-1.5">
-                <Label htmlFor="correo">Correo</Label>
-                <Sacudir veces={falla("correo") ? envio.intentos : 0}>
-                  <Input
-                    id="correo"
-                    name="correo"
-                    type="email"
-                    value={cliente.correo}
-                    onChange={cambiar}
-                    aria-invalid={falla("correo")}
-                  />
+                <Sacudir veces={envio.intentos}>
+                  <ListaErrores errores={errores} />
                 </Sacudir>
-              </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
 
-              <div className="grid gap-1.5">
-                <Label htmlFor="notas">Notas de personalización</Label>
+        <div className="flex min-w-0 flex-col gap-9">
+          <Seccion numero={2}>Directorio</Seccion>
+          <div className="flex flex-col gap-5">
+            <form onSubmit={buscar} className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  id="notas"
-                  name="notas"
-                  value={cliente.notas}
-                  onChange={cambiar}
+                  value={texto}
+                  onChange={(e) => setTexto(e.target.value)}
+                  placeholder="Escribe parte del nombre"
+                  className="pl-9"
                 />
               </div>
-
-              <BotonGuardar
-                guardando={guardando}
-                listo={envio.listo}
-                className="w-full"
-              >
-                Registrar
-              </BotonGuardar>
-
-              <Sacudir veces={envio.intentos}>
-                <ListaErrores errores={errores} />
-              </Sacudir>
+              <Button type="submit" variant="outline">
+                Buscar
+              </Button>
             </form>
-          </CardContent>
-        </Card>
 
-        <Card className="min-w-0 gap-0 py-0">
-          <form onSubmit={buscar} className="flex gap-2 border-b p-4">
-            <div className="relative flex-1">
-              <Search
-                className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-              />
-              <Input
-                value={texto}
-                onChange={(e) => setTexto(e.target.value)}
-                placeholder="Escribe parte del nombre"
-                className="pl-9"
-              />
-            </div>
-
-            <Button type="submit" variant="outline">
-              Buscar
-            </Button>
-          </form>
-
-          <CardContent className="p-0">
-            {resultados.length === 0 ? (
-              <p className="p-10 text-center text-sm text-muted-foreground">
+            {fichas.length === 0 ? (
+              <p className="texto-mano py-8 text-center">
                 No hay clientes con ese nombre.
               </p>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="pl-4">Nombre</TableHead>
-                    <TableHead>Teléfono</TableHead>
-                    <TableHead>Correo</TableHead>
-                    <TableHead className="pr-4">Notas</TableHead>
-                  </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                  {resultados.map((c) => (
-                    <TableRow key={c.id}>
-                      <TableCell className="pl-4 font-medium">
-                        {c.nombre}
-                      </TableCell>
-                      <TableCell>{c.telefono || "-"}</TableCell>
-                      <TableCell>{c.correo || "-"}</TableCell>
-                      <TableCell className="pr-4 text-muted-foreground">
-                        {c.notas || "-"}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="fichas">
+                {fichas.map((c) => (
+                  <div key={c.id} className="ficha">
+                    <div className="ficha-cab">
+                      <span className="inicial">
+                        {c.nombre.charAt(0).toUpperCase()}
+                      </span>
+                      <b>{c.nombre}</b>
+                    </div>
+                    <dl>
+                      <dt>Teléfono</dt>
+                      <dd>{c.telefono || "-"}</dd>
+                      <dt>Correo</dt>
+                      <dd>{c.correo || "-"}</dd>
+                      <dt>Notas</dt>
+                      <dd>{c.notas || "-"}</dd>
+                    </dl>
+                  </div>
+                ))}
+              </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </Pagina>
   );
