@@ -1,0 +1,25 @@
+/* La palomita se dibuja como si se cosiera */ 
+
+.boton-guardar .palomita path {  
+    fill: none;  
+    stroke: currentColor;  
+    stroke-width: 3;  
+    stroke-linecap: round;  
+    stroke-linejoin: round;  
+    stroke-dasharray: 1;  
+    stroke-dashoffset: 1;  
+    animation: palomita-dibuja 0.45s ease-out 0.1s forwards; 
+} 
+.boton-guardar:has(.palomita) {  
+    animation: boton-latido 0.4s ease-out; 
+} 
+@keyframes palomita-dibuja {  
+    to {    
+        stroke-dashoffset: 0;  
+    } 
+} 
+@keyframes boton-latido {  
+    50% {    
+        transform: scale(1.05);  
+    } 
+}

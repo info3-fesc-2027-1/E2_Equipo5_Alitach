@@ -1,0 +1,9 @@
+.numero-salta {  
+    animation: numero-salta 0.5s cubic-bezier(0.3, 1.6, 0.5, 1); 
+} 
+@keyframes numero-salta {  
+    0% { transform: scale(1); }  
+    30% { transform: scale(1.6) translateY(-4px); color: #3f9a2b; }  
+    100% { transform: scale(1); 
+    } 
+}
