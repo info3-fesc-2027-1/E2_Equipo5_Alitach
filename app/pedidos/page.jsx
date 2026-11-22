@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
 import { obtenerPedidos } from "../../lib/datos";
+
 import {
   ordenarPedidos,
   esAtrasado,
@@ -18,6 +19,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+
 import {
   Table,
   TableBody,
@@ -53,6 +55,13 @@ export default function Pedidos() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Si llega desde una etiqueta del Panel (ej. /pedidos?estado=Pendiente) ya viene filtrado
+    const desdePanel = new URLSearchParams(window.location.search).get("estado");
+
+    if (ESTADOS.includes(desdePanel)) {
+      setEstado(desdePanel);
+    }
+
     obtenerPedidos()
       .then(setPedidos)
       .catch((e) => setError("Error al cargar pedidos: " + e.message))
@@ -78,41 +87,58 @@ export default function Pedidos() {
   return (
     <Pagina>
       <EncabezadoPagina
+        etiqueta="Operación"
         titulo="Pedidos"
-        descripcion="Los pedidos atrasados aparecen primero."
+        descripcion={
+          cargando
+            ? "Cargando pedidos..."
+            : pedidos.length +
+              (pedidos.length === 1
+                ? " pedido en total"
+                : " pedidos en total") +
+              " · los atrasados van primero"
+        }
       />
 
-      <Card className="gap-0 py-0">
-        <div className="flex flex-col gap-3 border-b p-4 lg:flex-row lg:items-center">
-          <div className="relative flex-1 sm:max-w-sm">
-            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+      <h2 className="texto-mano mb-3 font-bold">01. Filtrar</h2>
 
-            <Input
-              value={cliente}
-              onChange={(e) => setCliente(e.target.value)}
-              placeholder="Buscar por cliente"
-              className="pl-9"
-            />
-          </div>
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+        <div className="relative flex-1 sm:max-w-sm">
+          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
 
-          <FiltroEstados
-            valor={estado}
-            alCambiar={setEstado}
-            opciones={[
-              { valor: TODOS, texto: "Todos", cantidad: pedidos.length },
-              ...ESTADOS.map((s) => ({
-                valor: s,
-                texto: s,
-                cantidad: contar(s),
-              })),
-            ]}
+          <Input
+            value={cliente}
+            onChange={(e) => setCliente(e.target.value)}
+            placeholder="Buscar por cliente"
+            className="pl-9"
           />
-
-          <p className="text-sm text-muted-foreground sm:ml-auto">
-            {lista.length} {lista.length === 1 ? "pedido" : "pedidos"}
-          </p>
         </div>
 
+        <FiltroEstados
+          valor={estado}
+          alCambiar={setEstado}
+          opciones={[
+            {
+              valor: TODOS,
+              texto: "Todos",
+              cantidad: pedidos.length,
+            },
+            ...ESTADOS.map((s) => ({
+              valor: s,
+              texto: s,
+              cantidad: contar(s),
+            })),
+          ]}
+        />
+
+        <p className="texto-mano lg:ml-auto">
+          {lista.length} {lista.length === 1 ? "pedido" : "pedidos"}
+        </p>
+      </div>
+
+      <h2 className="texto-mano mb-3 font-bold">02. Resultados</h2>
+
+      <Card className="gap-0 py-0">
         <CardContent className="p-0">
           {error && (
             <div className="p-4">
@@ -127,11 +153,11 @@ export default function Pedidos() {
               <Skeleton className="h-10" />
             </div>
           ) : lista.length === 0 ? (
-            <p className="p-10 text-center text-sm text-muted-foreground">
+            <p className="texto-mano p-10 text-center">
               No hay pedidos con esos filtros.
             </p>
           ) : (
-            <Table>
+            <Table className="tabla-movil">
               <TableHeader>
                 <TableRow>
                   <TableHead className="pl-4">Estado</TableHead>
@@ -154,40 +180,50 @@ export default function Pedidos() {
                       onClick={() => router.push("/pedidos/" + p.id)}
                       className={cn(
                         "cursor-pointer",
-                        atrasado &&
-                          "bg-red-50/60 shadow-[inset_3px_0_0_var(--color-red-500)]",
+                        atrasado && "fila-atrasada"
                       )}
                     >
-                      <TableCell className="pl-4">
+                      <TableCell data-et="Estado" className="pl-4">
                         <div className="flex flex-wrap gap-1">
                           <EstadoBadge estado={p.estado} />
                           {atrasado && <AtrasadoBadge />}
                         </div>
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell data-et="Pedido">
                         <Link
                           href={"/pedidos/" + p.id}
                           onClick={(e) => e.stopPropagation()}
-                          className="font-medium text-primary hover:underline"
+                          className="font-extrabold text-primary hover:underline"
                         >
                           #{p.id}
                         </Link>
                       </TableCell>
 
-                      <TableCell>{p.cliente?.nombre}</TableCell>
+                      <TableCell data-et="Cliente">
+                        {p.cliente?.nombre}
+                      </TableCell>
 
                       <TableCell
-                        className={cn(atrasado && "font-medium text-red-600")}
+                        data-et="Fecha compromiso"
+                        className={cn(
+                          atrasado && "font-medium text-red-600"
+                        )}
                       >
                         {fechaCorta(p.fecha_compromiso)}
                       </TableCell>
 
-                      <TableCell className="text-right tabular-nums">
+                      <TableCell
+                        data-et="Piezas"
+                        className="text-right tabular-nums"
+                      >
                         {prendas.reduce((s, x) => s + x.piezas, 0)}
                       </TableCell>
 
-                      <TableCell className="pr-4 text-right tabular-nums">
+                      <TableCell
+                        data-et="Total"
+                        className="pr-4 text-right font-semibold tabular-nums"
+                      >
                         {dinero(calcularTotal(prendas))}
                       </TableCell>
                     </TableRow>
