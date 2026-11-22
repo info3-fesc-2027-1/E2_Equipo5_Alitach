@@ -9,6 +9,8 @@ import { calcularTotal, esAtrasado } from "../../../lib/logica";
 import CambiarEstado from "./CambiarEstado";
 import CancelarPedido from "./CancelarPedido";
 import CambiarFecha from "./CambiarFecha";
+import { AnilloAvance } from "@/components/alitachs/anillo-avance";
+import { Desplegable } from "@/components/alitachs/desplegable";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -231,7 +233,7 @@ export default function DetallePedido() {
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+      <div className="grid gap-4 2xl:grid-cols-[1fr_320px]">
         <div className="min-w-0 space-y-4">
           {/* Prendas */}
           <Card>
@@ -321,55 +323,63 @@ export default function DetallePedido() {
                   </div>
                 </div>
               ) : (
-                <ol className="flex">
-                  {PASOS.map((paso, i) => {
-                    const hecho = i <= pasoActual;
-                    const fecha = fechaDePaso(paso);
-                    return (
-                      <li key={paso} className="relative flex-1">
-                        {i > 0 && (
-                          <span
-                            className={cn(
-                              "absolute top-3 right-1/2 -z-0 h-0.5 w-full",
-                              hecho ? "bg-green-600" : "bg-border",
-                            )}
-                          />
-                        )}
-                        <div className="relative flex flex-col items-center text-center">
-                          <span
-                            className={cn(
-                              `flex size-6 items-center justify-center rounded-full border-2 bg-card`,
-                              hecho
-                                ? "border-green-600 bg-green-600 text-white"
-                                : "border-border",
-                            )}
-                          >
-                            {hecho && <Check className="size-3.5" />}
-                          </span>
-                          <span
-                            className={cn(
-                              "mt-2 text-sm",
-                              hecho ? "font-medium" : "text-muted-foreground",
-                            )}
-                          >
-                            {paso}
-                          </span>
-                          {hecho && fecha && (
-                            <span className="text-xs text-muted-foreground">
-                              {fechaCorta(fecha)}
-                            </span>
+                <div className="flex items-center gap-6">
+                  <AnilloAvance
+                    paso={pasoActual + 1}
+                    total={PASOS.length}
+                    atrasado={esAtrasado(pedido)}
+                  />
+                  <ol className="flex flex-1">
+                    {PASOS.map((paso, i) => {
+                      const hecho = i <= pasoActual;
+                      const fecha = fechaDePaso(paso);
+                      return (
+                        <li key={paso} className="relative flex-1">
+                          {i > 0 && (
+                            <span
+                              className={cn(
+                                "absolute top-3 right-1/2 -z-0 h-0.5 w-full",
+                                hecho ? "bg-green-600" : "bg-border",
+                              )}
+                            />
                           )}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ol>
+                          <div className="relative z-[1] flex flex-col items-center text-center">
+                            <span
+                              className={cn(
+                                `flex size-6 items-center justify-center rounded-full border-2 bg-card`,
+                                hecho
+                                  ? "border-green-600 bg-green-600 text-white"
+                                  : "border-border",
+                              )}
+                            >
+                              {hecho && <Check className="size-3.5" />}
+                            </span>
+                            <span
+                              className={cn(
+                                "mt-2 text-sm",
+                                hecho ? "font-medium" : "text-muted-foreground",
+                              )}
+                            >
+                              {paso}
+                            </span>
+                            {hecho && fecha && (
+                              <span className="text-xs text-muted-foreground">
+                                {fechaCorta(fecha)}
+                              </span>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </div>
               )}
               <CambiarEstado pedido={pedido} alCambiar={cargar} />
             </CardContent>
           </Card>
         </div>
-        <div className="space-y-4">
+        {/* Cambiar fecha e Historial: abajo en dos columnas; al lado solo en pantallas muy anchas */}
+        <div className="grid items-start gap-4 md:grid-cols-2 2xl:grid-cols-1 2xl:content-start">
           <Card>
             <CardHeader>
               <CardTitle>Cambiar fecha compromiso</CardTitle>
@@ -382,32 +392,34 @@ export default function DetallePedido() {
             </CardContent>
           </Card>
           <Card>
-            <CardHeader>
-              <CardTitle>Historial</CardTitle>
-            </CardHeader>
             <CardContent>
-              {historial.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  Todavía no hay cambios de estado.
-                </p>
-              ) : (
-                <ol className="space-y-4 border-l pl-4">
-                  {historial.map((c) => (
-                    <li key={c.id} className="relative text-sm">
-                      <span
-                        className={`absolute top-1.5 -left-[21px] size-2.5 rounded-full bg-primary`}
-                      />
-                      <p className="font-medium">
-                        {c.estado_anterior} → {c.estado_nuevo}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {fechaHora(c.fecha_hora)} · por{" "}
-                        {c.usuario?.nombre || "?"}
-                      </p>
-                    </li>
-                  ))}
-                </ol>
-              )}
+              <Desplegable
+                titulo="Historial"
+                detalle={historial.length + (historial.length === 1 ? " cambio" : " cambios")}
+              >
+                {historial.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    Todavía no hay cambios de estado.
+                  </p>
+                ) : (
+                  <ol className="space-y-4 border-l pl-4">
+                    {historial.map((c) => (
+                      <li key={c.id} className="relative text-sm">
+                        <span
+                          className={`absolute top-1.5 -left-[21px] size-2.5 rounded-full bg-primary`}
+                        />
+                        <p className="font-medium">
+                          {c.estado_anterior} → {c.estado_nuevo}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {fechaHora(c.fecha_hora)} · por{" "}
+                          {c.usuario?.nombre || "?"}
+                        </p>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </Desplegable>
             </CardContent>
           </Card>
         </div>
