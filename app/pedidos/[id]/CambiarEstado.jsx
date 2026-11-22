@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { ArrowRight } from "lucide-react";
 import { obtenerUsuarios, guardarCambioEstado } from "../../../lib/datos";
 import { puedeCambiarEstado } from "../../../lib/logica";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -15,22 +14,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ListaErrores } from "@/components/comunes";
+import { BotonGuardar } from "@/components/alitachs/boton-guardar";
+import { Sacudir } from "@/components/alitachs/sacudir";
+import { useEnvio } from "@/components/alitachs/usar-envio";
 // Siguiente estado permitido según RN-06
 const SIGUIENTE = { Pendiente: "En proceso", "En proceso": "Entregado" };
-
 export default function CambiarEstado({ pedido, alCambiar }) {
   const [usuarios, setUsuarios] = useState([]);
   const [usuarioId, setUsuarioId] = useState("");
   const [nuevo, setNuevo] = useState("");
   const [errores, setErrores] = useState([]);
   const [guardando, setGuardando] = useState(false);
-
+  const envio = useEnvio();
   useEffect(() => {
     obtenerUsuarios()
       .then(setUsuarios)
       .catch((e) => setErrores(["Error al cargar usuarios: " + e.message]));
   }, []);
-
   // Revisa la regla RN-06 y, si se puede, guarda el cambio
   async function cambiar() {
     const lista = [];
@@ -44,6 +44,7 @@ export default function CambiarEstado({ pedido, alCambiar }) {
     }
     setErrores(lista);
     if (lista.length > 0) {
+      envio.fallo();
       return;
     }
     setGuardando(true);
@@ -54,12 +55,14 @@ export default function CambiarEstado({ pedido, alCambiar }) {
         nuevo,
         Number(usuarioId),
       );
+      envio.exito();
       toast.success("Pedido #" + pedido.id + " ahora está " + nuevo);
       setNuevo("");
       setUsuarioId("");
       await alCambiar();
     } catch (e) {
       setErrores(["Error al guardar: " + e.message]);
+      envio.fallo();
     } finally {
       setGuardando(false);
     }
@@ -73,37 +76,41 @@ export default function CambiarEstado({ pedido, alCambiar }) {
   }
   return (
     <div className="space-y-3">
-      <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+      <div className="grid gap-3 lg:grid-cols-[1fr_1fr_auto] lg:items-end">
         <div className="grid gap-1.5">
           <Label>Nuevo estado</Label>
-          <Select value={nuevo} onValueChange={setNuevo}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Elige el estado" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="En proceso">En proceso</SelectItem>
-              <SelectItem value="Entregado">Entregado</SelectItem>
-            </SelectContent>
-          </Select>
+          <Sacudir veces={!nuevo ? envio.intentos : 0}>
+            <Select value={nuevo} onValueChange={setNuevo}>
+              <SelectTrigger className="w-full" aria-invalid={errores.length > 0 && !nuevo}>
+                <SelectValue placeholder="Elige el estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="En proceso">En proceso</SelectItem>
+                <SelectItem value="Entregado">Entregado</SelectItem>
+              </SelectContent>
+            </Select>
+          </Sacudir>
         </div>
         <div className="grid gap-1.5">
           <Label>¿Quién hace el cambio?</Label>
-          <Select value={usuarioId} onValueChange={setUsuarioId}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Elige a la persona" />
-            </SelectTrigger>
-            <SelectContent>
-              {usuarios.map((u) => (
-                <SelectItem key={u.id} value={String(u.id)}>
-                  {u.nombre}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Sacudir veces={!usuarioId ? envio.intentos : 0}>
+            <Select value={usuarioId} onValueChange={setUsuarioId}>
+              <SelectTrigger className="w-full" aria-invalid={errores.length > 0 && !usuarioId}>
+                <SelectValue placeholder="Elige a la persona" />
+              </SelectTrigger>
+              <SelectContent>
+                {usuarios.map((u) => (
+                  <SelectItem key={u.id} value={String(u.id)}>
+                    {u.nombre}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Sacudir>
         </div>
-        <Button type="button" onClick={cambiar} disabled={guardando}>
-          {guardando ? "Guardando..." : "Cambiar estado"}
-        </Button>
+        <BotonGuardar type="button" onClick={cambiar} guardando={guardando} listo={envio.listo}>
+          Cambiar estado
+        </BotonGuardar>
       </div>
       {SIGUIENTE[pedido.estado] && (
         <p className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -111,7 +118,9 @@ export default function CambiarEstado({ pedido, alCambiar }) {
           {SIGUIENTE[pedido.estado]}
         </p>
       )}
-      <ListaErrores errores={errores} />
+      <Sacudir veces={envio.intentos}>
+        <ListaErrores errores={errores} />
+      </Sacudir>
     </div>
   );
 }
