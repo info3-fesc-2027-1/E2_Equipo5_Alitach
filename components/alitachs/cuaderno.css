@@ -464,7 +464,7 @@ body.cuaderno .texto-mano {
   height: 14px;
   /* La onda del hilo es un SVG dentro del CSS (la \ al final de renglón continúa el texto) */
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' \
-viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M0 3 Q 50 13 100 3 T 200 3' \
+viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M0 7 Q 50 13 100 7 T 200 7' \
 fill='none' stroke='%237dd957' stroke-width='2.5' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E")
     0 0 / 100% 100% no-repeat;
   pointer-events: none;
